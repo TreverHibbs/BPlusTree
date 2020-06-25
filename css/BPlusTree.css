@@ -1,0 +1,151 @@
+
+/*
+ *
+ * CONTENTS
+ *
+ * UI_LAYOUT
+ * body...........body element styling
+ * header.........header styling
+ * display........display field styling
+ * footer.........footer styling
+ * flex...........Flex general classes
+ * color..........
+ *
+ */
+
+
+/*------------------------------------*\
+  #UI_LAYOUT
+\*------------------------------------*/
+
+
+/* Body */
+body {
+  text-shadow: none;
+  font-family: system-ui
+               ,-apple-system
+               ,BlinkMacSystemFont
+               ,Segoe UI
+               ,Roboto
+               ,Oxygen
+               ,Ubuntu
+               ,Cantarell
+               ,Fira Sans
+               ,Droid Sans
+               ,Helvetica Neue
+               ,sans-serif;
+
+  display: grid;
+  grid: "H" 100px
+        "D" 1fr
+        "F" 100px
+  /     1fr;
+  /* grid-template-columns: [first control-start] 1fr [last]; */
+  /* grid-template-rows: [first header-start] 50px [display-start] 1fr [footer-start] 50px [last]; */
+
+  min-height: 100vh;
+  justify-content: space-between;
+  align-content: safe center;
+
+  margin: 0px;
+}
+
+
+/* Header */
+.header {
+}
+
+
+/* Display */
+.display {
+
+}
+
+
+/* Footer */
+.footer {
+
+}
+
+
+/* Flex */
+.row {
+  display:flex;
+  flex-direction:row;
+}
+
+.col {
+  display:flex;
+  flex-direction:column;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-center {
+  justify-content: center;
+}
+
+.flex-between {
+  justify-content: flex-between;
+}
+
+.flex-around {
+  justify-content: flex-around;
+}
+
+.flex-evenly {
+  justify-content: flex-evenly;
+}
+
+
+/* Color */
+
+/* dark-red */
+.primary-color {
+  background: #a82d43;
+  color: white;
+}
+
+/* light-red */
+.highlight-color {
+  background: #d1171f;
+  color: white;
+}
+
+/* dark-grey */
+.secondary-color { 
+  background: #595959;
+  color: white;
+}
+
+/* light-grey */
+.field-color {
+  background: #dbdbdb;
+  color: black;
+}
+
+/* grey */
+.field-highlight {
+  background: #c0c0c0;
+  color: black;
+}
+
+/*Font Colors*/
+.font-primary {
+  color: white;
+}
+
+.font-success {
+  color: #70d770;
+}
+
+.font-failure {
+  color: red;
+}
+
+.font-required {
+  color: #d1171f;
+}
+
