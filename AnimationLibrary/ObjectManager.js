@@ -49,7 +49,7 @@ function ObjectManager()
 	this.BackEdges = [];
 	this.activeLayers = [];
 	this.activeLayers[0] = true;
-	this.ctx = document.getElementById('canvas').getContext('2d');
+	this.ctx = document.getElementById('myCanvas').getContext('2d');
 	this.framenum = 0;
 	this.width = 0;
 	this.height = 0;

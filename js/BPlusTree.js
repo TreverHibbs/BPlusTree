@@ -1,3 +1,9 @@
+STARTING_X = 70;
+STARTING_Y = 80;
+DEFAULT_SPEED = 20;
+
+var slider = document.getElementById("speedSlider");
+
 
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
@@ -15,27 +21,25 @@ myBTreeNode.x = 400;
 myBTreeNode.y = 300;
 myBTreeNode.draw(ctx);
 
-function init() {
-    window.requestAnimationFrame(draw);
+ctx.clearRect(0, 0, 900, 600);
+
+
+myObjectManager = new ObjectManager();
+myAnimationManager = new AnimationManager(myObjectManager);
+
+//method arguments ObjectID, widthPerElem, height, numElems, backgroundColor, forgroundColor
+myObjectManager.addBTreeNode(0, 20, 10, 1, "white", "red"); 
+myObjectManager.setNodePosition(0, STARTING_X, STARTING_Y);
+
+moveCommand = "MOVE<;>0<;>300<;>450";
+commands = [moveCommand];
+
+slider.oninput = function() {
+  slider.speed = this.value;
 }
 
-function draw() {
-    var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#FF0000";
+slider.speed = DEFAULT_SPEED;
+myAnimationManager.SetSpeed(slider.speed);
 
-    ctx.clearRect(0,0,300,300);
-    
-    ctx.rotate(1*Math.PI / 180);
-    ctx.translate(2, 0);
-    ctx.fillRect(0, -12, 40, 24);
-
-    ctx.save();
-
-    ctx.restore();
-
-    window.requestAnimationFrame(draw);
-}
-
-init();
+myAnimationManager.StartNewAnimation(commands);
 

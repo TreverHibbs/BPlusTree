@@ -190,8 +190,8 @@ function timeout()
 	// We need to set the timeout *first*, otherwise if we
 	// try to clear it later, we get behavior we don't want ...
     timer = setTimeout('timeout()', 30); 
-	animationManager.update();
-	objectManager.draw();	
+	myAnimationManager.update();
+	myObjectManager.draw();	
         
 }
 
@@ -1297,8 +1297,10 @@ function AnimationManager(objectManager)
 	 
 	
 	this.update = function()
-	{
-		
+	{	
+        //get rid of trail when animating.
+        ctx.clearRect(0,0, myCanvas.width, myCanvas.height);
+
 		if (this.currentlyAnimating)
 		{
 			this.currFrame = this.currFrame + 1;
