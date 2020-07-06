@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mocha Tests</title>
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+    <link rel="stylesheet" href="../css/BPlusTree.css">
+  </head>
+ 
+  <body>
+    <header id="H" class="header row">
+      Header
+    </header>
+    <div id="D" class="display row flex-center">
+      <canvas id="myCanvas" class="display display__canvas field-color" width="900" height="600" >
+         
+      </canvas>
+    </div>
+    <footer id="F" class="footer row">
+      <div class="speed col">
+        <label class="ui-slider-label"> 
+          animation speed
+        </label>
+        <input id="speedSlider" class="ui-slider" type="range" min="1" max="100" value="50"></a>
+      </div>
+    </footer>
+  <div id="mocha"></div>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script>mocha.setup('bdd')</script>
+ 
+    <!-- load code you want to test here -->
+    <script type = "text/javascript" src = "../js/AnimationLibrary/CustomEvents.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/UndoFunctions.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/AnimatedObject.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/AnimatedLabel.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/AnimatedCircle.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/AnimatedRectangle.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/AnimatedLinkedList.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/AnimatedBTreeNode.js"> </script>
+
+    <script type = "text/javascript" src = "../js/AnimationLibrary/HighlightCircle.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/Line.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/ObjectManager.js"> </script>
+    <script type = "text/javascript" src = "../js/AnimationLibrary/AnimationMain.js"> </script>
+
+    <script src="../js/view/cmdConverter.js"></script>
+    <script src="../js/view/view.js"></script>
+
+    <!-- load your test files here -->
+    <script src="test.js"></script>
+
+
+    <script>
+      mocha.run();
+    </script>
+  </body>
+</html>
+
