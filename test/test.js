@@ -1,25 +1,15 @@
 var assert = chai.assert;
 
-var string1 = "hello";
-var string2 = "world";
+
+//declare variables for testing
+var commands = [];
+
+
+
+
 
 describe('String', function() {
-  it('should start empty', function() {
-    var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    
-    
-    objectManager = new ObjectManager();
-    animationManager = new AnimationManager(objectManager);
-   
-    command = createCommand("CreateBTreeNode",idIndex , WIDTH_PER_ELEM, NODE_HEIGHT, 1, STARTING_X, STARTING_Y, BACKGROUND_COLOR,  FOREGROUND_COLOR);
-    commands = [];
-    commands[0] = command;
-    command = createCommand("SetText", idIndex, 1, 0);
-    commands[1] = command;
-    console.log(command);
-    
-    animationManager.StartNewAnimation(commands);
+  it('Should result in hello<;>world', function() {
     var string1 = "hello";
     var string2 = "world";
     
@@ -27,4 +17,91 @@ describe('String', function() {
                  "cmdConverter returns new animation command");
   });
 });
+
+
+describe('Animation', function() {
+  it('Should create array of root insertion commands', function() {
+    createRoot(commands, 1);
+
+    assert.deepEqual(commands,
+                     ["CreateBTreeNode<;>0<;>40<;>20<;>1<;>450<;>30<;>#EEFFEE<;>#a82d43",
+                      "SetText<;>0<;>1<;>0"],
+                      "cmdConverter returns new animation command");
+  });
+});
+
+
+describe('Array of Strings', function() {
+  it('Should result in list of commands to create and extend node', function() {
+    var nodeID = 0;
+    addToNode(commands, 2, nodeID);
+    
+    assert.deepEqual(commands, 
+                     ["CreateBTreeNode<;>0<;>40<;>20<;>1<;>450<;>30<;>#EEFFEE<;>#a82d43",
+                      "SetText<;>0<;>1<;>0", "SetNumElements<;>0<;>2",
+                      "SetText<;>0<;>2<;>1"],
+                      "cmdConverter returns new animation command");
+    
+    animationManager.StartNewAnimation(commands);
+  });
+});
+
+
+
+
+
+/* OLD TESTS */
+
+//command = createCommand("CreateBTreeNode",idIndex , WIDTH_PER_ELEM, NODE_HEIGHT, 1, STARTING_X, STARTING_Y, BACKGROUND_COLOR,  FOREGROUND_COLOR);
+//commands = [];
+//commands[0] = command;
+//command = createCommand("SetText", idIndex, 1, 0);
+//commands[1] = command;
+//console.log(command);
+
+//animationManager.StartNewAnimation(commands);
+
+//STARTING_X = 70; //STARTING_Y = 80;
+//
+//var slider = document.getElementById("speedSlider");
+//
+//
+//var canvas = document.getElementById("myCanvas");
+//var ctx = canvas.getContext("2d");
+//ctx.fillStyle = "#FF0000";
+//ctx.fillRect(390, 0, 80, 80);
+//
+////create path
+//ctx.lineWidth = 10;
+//ctx.moveTo(450, 300);
+//ctx.lineTo(600, 200);
+//ctx.stroke();
+//
+//myBTreeNode = new AnimatedBTreeNode(0, 10, 10, 1, "white", "red");
+//myBTreeNode.x = 400;
+//myBTreeNode.y = 300;
+//myBTreeNode.draw(ctx);
+//
+//ctx.clearRect(0, 0, 900, 600);
+//
+//
+//myObjectManager = new ObjectManager();
+//myAnimationManager = new AnimationManager(myObjectManager);
+//
+////method arguments ObjectID, widthPerElem, height, numElems, backgroundColor, forgroundColor
+//myObjectManager.addBTreeNode(0, 20, 10, 1, "white", "red"); 
+//myObjectManager.setNodePosition(0, STARTING_X, STARTING_Y);
+//
+//moveCommand = "MOVE<;>0<;>300<;>450";
+//commands = [moveCommand];
+//
+//slider.oninput = function() {
+//  slider.speed = this.value;
+//}
+//
+//slider.speed = DEFAULT_SPEED;
+//myAnimationManager.SetSpeed(slider.speed);
+//
+//myAnimationManager.StartNewAnimation(commands);
+//
 
