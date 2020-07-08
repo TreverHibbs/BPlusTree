@@ -17,4 +17,17 @@ objectManager = new ObjectManager();
 animationManager = new AnimationManager(objectManager);
 
 
+/**
+ *  @desc executes a list of model commands
+ *  @param jsonObj $modelCommands - a object containg a list of commands
+ *  @return bool - true if commands executed false if invalid commands are sent
+ */ 
+function view(modelCommands) {
+  var animationCommands = [];
+
+  createRoot(animationCommands, modelCommands[0].value) 
+
+  animationManager.StartNewAnimation(animationCommands);
+  return(true);
+}
 
