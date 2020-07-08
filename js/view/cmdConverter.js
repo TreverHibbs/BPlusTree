@@ -5,10 +5,27 @@
 */
 
 
+/*
+ * CONTENTS
+ *
+ * CONSTANTS
+ *
+ * COVERSION-FUNCTIONS 
+ *   creatRoot()
+ *   addToNode()
+ *
+ * HELPER-FUNCTIONS
+ *
+ */
 
 
 
-//constants delcarations
+
+
+/*------------------------------------*\
+  #CONSTANTS
+\*------------------------------------*/
+
 var STARTING_X = 450; STARTING_Y = 300;
 var DEFAULT_SPEED = 20;
 var FIRST_PRINT_POS_X = 50;
@@ -33,7 +50,7 @@ var MAROON = "#a82d43";
 var LINK_COLOR = "#a82d43";
 var HIGHLIGHT_CIRCLE_COLOR = "#a82d43";
 var FOREGROUND_COLOR = "#a82d43";
-var BACKGROUND_COLOR = "#EEFFEE";
+var BACKGROUND_COLOR = "#f4e5e8";
 var PRINT_COLOR = FOREGROUND_COLOR;
 
 var idIndex = 0;
@@ -45,6 +62,11 @@ animationManager = new AnimationManager(objectManager);
 
 
 
+
+
+/*------------------------------------*\
+  #COVERSION-FUNCTIONS 
+\*------------------------------------*/
 
 /**
  *  @desc creates a list of commands for the creation a BTree root.
@@ -61,6 +83,24 @@ function createRoot(commands, value) {
   commands.push(command);
   command = createCommand("SetText", idIndex, 1, nodeID);
   commands.push(command);
+  command = createCommand("Step");
+  commands.push(command);
+
+  return(commands);
+}
+
+
+/**
+ *  @desc highlight node that is currently being examined in the algorithm
+ *  @param Array $commands - an Array of animation libaray commands.
+ *         int $nodeID - the id of the node to highlight
+ *  @return Array - the updated list of generated commands
+ */ 
+function highlightNode(commands, nodeID) {
+  command = createCommand("SetHighlight", nodeID, 1);
+  commands.push(command);
+  command = createCommand("Step");
+  commands.push(command);
 
   return(commands);
 }
@@ -71,12 +111,16 @@ function createRoot(commands, value) {
  *  @param Array $commands - an Array of animation libaray commands.
  *         int $value - the value to add to existing node,
  *         int $nodeID - index of the newly created node value.
+ *         int $valueIndex - where in the node to place the value
  *  @return Array $commands - The modified array of commands
  */ 
-function addToNode(commands, value, nodeID) {
-  command = createCommand("SetNumElements", nodeID, 2); 
+function addToNode(commands, value, nodeID, valueIndex) {
+  //third argument needs +1 because of 0 indexing.
+  command = createCommand("SetNumElements", nodeID, (valueIndex+1)); 
   commands.push(command);
-  command = createCommand("SetText", nodeID, value, 1);
+  command = createCommand("SetText", nodeID, value, valueIndex);
+  commands.push(command);
+  command = createCommand("Step");
   commands.push(command);
 
   return(commands);
@@ -86,12 +130,15 @@ function addToNode(commands, value, nodeID) {
 
 
 
+/*------------------------------------*\
+  #HELPER-FUNCTIONS 
+\*------------------------------------*/
+
 /**
  *  @desc Converts a list of values into animation command format
  *  @param arguments $arguments - Uses however many arguments are passed to it
  *  @return String $command - New animation command string
  */ 
-//helper functions
 function createCommand() {
   var command = "";
   let commands = Array.from(arguments);
