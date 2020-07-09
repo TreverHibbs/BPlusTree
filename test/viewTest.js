@@ -8,24 +8,54 @@ describe('view-module', function () {
 
   
   describe('render.js', function() {
-    describe('renderInsert()', function() {
+    describe('renderCreateNode()', function() {
       it('Should execute list of model commands', function() {
-        command = { "name":"insert", "value":1, "nodeID":0 }
+        var animationCommands = [];
+        command = { "name":"createNode", "value":1 }
 
-        assert.isTrue(renderInsert(command), 'returned true');
+        assert.deepEqual(renderCreateNode(animationCommands, command.value),
+                         ["CreateBTreeNode<;>0<;>40<;>20<;>1<;>450<;>30<;>#f4e5e8<;>#a82d43",
+                         "SetText<;>0<;>1<;>0", "Step"],
+                         'Should return anim commands');
+      });
+    });
+    
+    describe('renderAddValue()', function() {
+      it('Should execute list of model commands', function() {
+        var animationCommands = [];
+        command = { "name":"addValue", "value":1, "valueIndex":1 }
+
+        assert.deepEqual(renderAddValue(animationCommands, command.value),
+                         ["SetNumElements<;>0<;>2",
+                          "SetText<;>0<;>1<;>1", "Step"],
+                         'Should return anim commands');
       });
     });
   });
 
 
   describe('view.js', function() {
-    describe('view()', function() {
-      it('Should execute list of model commands', function() {
+    describe('view() given createNode command', function() {
+      it('Should execute createNode command', function() {
         var modelCommands = [
-          { "name":"insert", "value":1, "nodeID":0 }
+          { "name":"createNode", "value":1 }
         ]; 
 
-        assert.isTrue(view(modelCommands), 'returned true');
+        assert.isTrue(view(modelCommands), 'should return true');
+      });
+    });
+    
+    describe('view() given createNode command and addValud command', function() {
+      it('Should execute createNode command and addValue command', function() {
+        var modelCommands = [
+          { "name":"createNode", "value":1 }
+        ]; 
+        assert.isTrue(view(modelCommands), 'should return true');
+        
+        var modelCommands = [
+          { "name":"addValue", "value":1, "valueIndex":1 }
+        ]; 
+        assert.isTrue(view(modelCommands), 'should return true');
       });
     });
   });

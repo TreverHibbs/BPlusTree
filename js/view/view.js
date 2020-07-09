@@ -77,18 +77,20 @@ animationManager = new AnimationManager(objectManager);
  *  @param jsonObj $modelCommands - a object containg a list of commands
  *  @return bool - true if commands executed false if invalid commands are sent
  */ 
-function view(modelCommands) {
-  var animationCommands = [];
+function view(modelCommands, animationCommands) {
+  if (animationCommands == undefined) {
+    var animationCommands = [];
+  }
   var command = {};
   
   
 
 
 
-  console.log(modelCommands);
   if (modelCommands.length == 0) {
-    if (animationCommands != []) {
+    if (animationCommands.length != 0) {
       animationManager.StartNewAnimation(animationCommands);
+      return(true);
     } else {
       return(false);
     }
@@ -97,15 +99,16 @@ function view(modelCommands) {
   }
 
 
-
-  if (command.name == "insert") {
-    renderInsert(command);
+  if (command.name == "addValue") {
+    renderAddValue(animationCommands, command.value, command.valueIndex);
+  } else if (command.name == "createNode") {
+    renderCreateNode(animationCommands, command.value);
   } else {
     return(false);
   }
 
 
-  view(modelCommands);
+  view(modelCommands, animationCommands);
   return(true);
 }
 
@@ -132,6 +135,7 @@ function view(modelCommands) {
  *
  *
  * INSERT-COMMAND
- * { "name":"insert", "value":1, "nodeID":0 } 
+ * { "name":"insert", "value":1 "valueIndex":0 } 
  *
  */
+

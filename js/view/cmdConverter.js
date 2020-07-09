@@ -22,6 +22,23 @@
 
 
 /*------------------------------------*\
+  #VARIABLES
+\*------------------------------------*/
+
+/**
+ *  @desc creates a list of commands for the creation a BTree root.
+ *  @param Array $commands - an Array of animation libaray commands.
+ *         int $value - the value of the root node,
+ *  @return Array - the updated list of generated commands
+ */ 
+
+var nodeID = 0;
+
+
+
+
+
+/*------------------------------------*\
   #COVERSION-FUNCTIONS 
 \*------------------------------------*/
 
@@ -31,9 +48,7 @@
  *         int $value - the value of the root node,
  *  @return Array - the updated list of generated commands
  */ 
-function createRoot(commands, value) {
-  var nodeID = 0;
-
+function createNode(commands, value) {
   command = createCommand("CreateBTreeNode", nodeID, WIDTH_PER_ELEM,
                           NODE_HEIGHT, 1, STARTING_X, STARTING_Y,
                           BACKGROUND_COLOR, FOREGROUND_COLOR);
@@ -42,6 +57,7 @@ function createRoot(commands, value) {
   commands.push(command);
   command = createCommand("Step");
   commands.push(command);
+  nodeID++;
 
   return(commands);
 }
@@ -71,7 +87,7 @@ function highlightNode(commands, nodeID) {
  *         int $valueIndex - where in the node to place the value
  *  @return Array $commands - The modified array of commands
  */ 
-function addToNode(commands, value, nodeID, valueIndex) {
+function addValue(commands, value, valueIndex) {
   //third argument needs +1 because of 0 indexing.
   command = createCommand("SetNumElements", nodeID, (valueIndex+1)); 
   commands.push(command);

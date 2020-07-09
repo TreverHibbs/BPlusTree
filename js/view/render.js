@@ -26,8 +26,19 @@
  *         int $value - the value of the root node,
  *  @return Array - the updated list of generated commands
  */ 
-function renderInsert(command) { 
+function renderAddValue(animationCommands, value, valueIndex) { 
+  addValue(animationCommands, value, valueIndex);
 
-  return(true);
+  return(animationCommands);
 }
 
+/**
+ *  @desc Returns list of animation commands for the creation of a node
+ *  @param int $value - the value of the root node,
+ *  @return Array - the updated list of generated commands
+ */ 
+function renderCreateNode(animationCommands, value) { 
+  createNode(animationCommands, value);
+
+  return(animationCommands);
+}
