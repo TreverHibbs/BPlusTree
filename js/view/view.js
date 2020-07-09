@@ -14,7 +14,8 @@
  *
  * CONSTANTS
  *
- * MAIN-VIEW-FUNC
+ * MAIN-VIEW-FACTORY-FUNC
+ *   RENDER-FUNCTIONS
  *   view()
  *
  */
@@ -73,43 +74,93 @@ animationManager = new AnimationManager(objectManager);
 \*------------------------------------*/
 
 /**
- *  @desc executes a list of model commands
- *  @param jsonObj $modelCommands - a object containg a list of commands
- *  @return bool - true if commands executed false if invalid commands are sent
+ *  @desc - a factory function for creating a view object
+ *  @return bool - a animate function for animating model commands
  */ 
-function view(modelCommands, animationCommands) {
-  if (animationCommands == undefined) {
-    var animationCommands = [];
+const View = function() {
+  const nodeIndex = 0; 
+
+
+
+
+
+
+  /*------------------------------------*\
+    #RENDER-FUNCTIONS
+  \*------------------------------------*/
+  
+  /**
+   *  @desc creates a list of commands for the creation a BTree root.
+   *  @param Array $commands - an Array of animation libaray commands.
+   *         int $value - the value of the root node,
+   *  @return Array - the updated list of generated commands
+   */ 
+  function renderAddValue(animationCommands, value, valueIndex, nodeID) { 
+    addValue(animationCommands, value, valueIndex, nodeID);
+  
+    return(animationCommands);
   }
-  var command = {};
   
+  /**
+   *  @desc Returns list of animation commands for the creation of a node
+   *  @param int $value - the value of the root node,
+   *  @return Array - the updated list of generated commands
+   */ 
+  function renderCreateNode(animationCommands, value, nodeIndex) { 
+    createNode(animationCommands, value, nodeIndex);
   
+    return(animationCommands);
+  }
+
+
+  return {
+    /**
+     *  @desc - a function for animating a list of model commands
+     *  @param Array $modelCommands - a array of model command objects to animate
+     *         Array $animationCommands - a list of animation library commands
+     *                                    for use with recursive calls
+     *  @return bool - on success return true else false
+     */ 
+    animate: function(modelCommands, animationCommands) {
+      //variable declaration
+      if (animationCommands == undefined) {
+        var animationCommands = [];
+      }
+      var command = {};
+      
+      
 
 
 
-  if (modelCommands.length == 0) {
-    if (animationCommands.length != 0) {
-      animationManager.StartNewAnimation(animationCommands);
+      if (modelCommands.length == 0) {
+        if (animationCommands.length != 0) {
+          animationManager.StartNewAnimation(animationCommands);
+          return(true);
+        } else {
+          return(false);
+        }
+      } else {
+        command = modelCommands.shift();
+      }
+
+
+      if (command.name == "addValue") {
+        renderAddValue(animationCommands,
+                       command.value,
+                       command.valueIndex,
+                       nodeIndex);
+      } else if (command.name == "createNode") {
+        renderCreateNode(animationCommands, command.value, nodeIndex);
+      } else {
+        return(false);
+      }
+
+
+      this.animate(modelCommands, animationCommands);
       return(true);
-    } else {
-      return(false);
+
     }
-  } else {
-    command = modelCommands.shift();
   }
-
-
-  if (command.name == "addValue") {
-    renderAddValue(animationCommands, command.value, command.valueIndex);
-  } else if (command.name == "createNode") {
-    renderCreateNode(animationCommands, command.value);
-  } else {
-    return(false);
-  }
-
-
-  view(modelCommands, animationCommands);
-  return(true);
 }
 
 

@@ -32,8 +32,6 @@
  *  @return Array - the updated list of generated commands
  */ 
 
-var nodeID = 0;
-
 
 
 
@@ -48,7 +46,7 @@ var nodeID = 0;
  *         int $value - the value of the root node,
  *  @return Array - the updated list of generated commands
  */ 
-function createNode(commands, value) {
+function createNode(commands, value, nodeID) {
   command = createCommand("CreateBTreeNode", nodeID, WIDTH_PER_ELEM,
                           NODE_HEIGHT, 1, STARTING_X, STARTING_Y,
                           BACKGROUND_COLOR, FOREGROUND_COLOR);
@@ -83,11 +81,11 @@ function highlightNode(commands, nodeID) {
  *  @desc adds a value to a existing node.
  *  @param Array $commands - an Array of animation libaray commands.
  *         int $value - the value to add to existing node,
- *         int $nodeID - index of the newly created node value.
+ *         int $nodeID - ID of the node to add value to
  *         int $valueIndex - where in the node to place the value
  *  @return Array $commands - The modified array of commands
  */ 
-function addValue(commands, value, valueIndex) {
+function addValue(commands, value, valueIndex, nodeID) {
   //third argument needs +1 because of 0 indexing.
   command = createCommand("SetNumElements", nodeID, (valueIndex+1)); 
   commands.push(command);

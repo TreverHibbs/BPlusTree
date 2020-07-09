@@ -35,27 +35,31 @@ describe('view-module', function () {
 
 
   describe('view.js', function() {
-    describe('view() given createNode command', function() {
+    describe('View() given createNode command', function() {
       it('Should execute createNode command', function() {
         var modelCommands = [
           { "name":"createNode", "value":1 }
         ]; 
 
-        assert.isTrue(view(modelCommands), 'should return true');
+        const view = View();
+
+        assert.isTrue(view.animate(modelCommands), 'should return true');
       });
     });
     
     describe('view() given createNode command and addValud command', function() {
       it('Should execute createNode command and addValue command', function() {
+        const view = View();
+
         var modelCommands = [
           { "name":"createNode", "value":1 }
         ]; 
-        assert.isTrue(view(modelCommands), 'should return true');
+        assert.isTrue(view.animate(modelCommands), 'should return true');
         
         var modelCommands = [
           { "name":"addValue", "value":1, "valueIndex":1 }
         ]; 
-        assert.isTrue(view(modelCommands), 'should return true');
+        assert.isTrue(view.animate(modelCommands), 'should return true');
       });
     });
   });
