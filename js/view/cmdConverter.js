@@ -47,23 +47,23 @@
  *  @return Array - the updated list of generated commands
  */ 
 function createNode(commands, bPlusTreeNode) {
+  //copy bPlusTreeNode.values to new array variable  
   var values = bPlusTreeNode.getValues().slice();
   var nodeID = bPlusTreeNode.getID();
   var valuesOrigLength = values.length;
 
 
   command = createCommand("CreateBTreeNode", nodeID, WIDTH_PER_ELEM,
-                          NODE_HEIGHT, values.shift(), STARTING_X, STARTING_Y,
+                          NODE_HEIGHT, values.length, STARTING_X, STARTING_Y,
                           BACKGROUND_COLOR, FOREGROUND_COLOR);
   commands.push(command);
 
-  addValues(commands, nodeID, values, valuesOrigLength);
+  genSetTextCmd(commands, nodeID, values);
 
-  command = createCommand("SetText", idIndex, 1, nodeID);
-  commands.push(command);
   command = createCommand("Step");
   commands.push(command);
   nodeID++;
+
 
   return(commands);
 }
@@ -128,30 +128,26 @@ function createCommand() {
  *  @desc Converts a list of values into a list of animation commands for
  *        adding values to node
  *  @param Array $commands - master list of animation commands.
+ *         int $nodeID - id of the node to add values to
  *         Array $values - list of values to add to node
+ *         int $valueIndex - current index of value to add
+ *                           used for recursive loop indexing
  *  @return String $command - New animation command string
  */ 
-function addValues(commands, nodeID, values, valuesOrigLength,
-                   elementsSetFlag, valueIndex) {
-  var valueIndex = 0;
-
-
-  if (elementsSetFlag == undefined) {
-    //third argument needs +1 because of 0 indexing.
-    command = createCommand("SetNumElements", nodeID, valuesOrigLength); 
-    commands.push(command);
-    elementsSetFlag = 1;
+function genSetTextCmd(commands, nodeID, values,
+                       valueIndex) {
+  if(valueIndex == undefined){
+    var valueIndex = 0;
   }
-  
+
+
   if (values.length != 0) {
     command = createCommand("SetText", nodeID, values.shift(), valueIndex++);
     commands.push(command);
-    addValues(commands,
-              nodeID,
-              values,
-              valuesOrigLength,
-              elementsSetFlag,
-              valueIndex);
+    genSetTextCmd(commands,
+                  nodeID,
+                  values,
+                  valueIndex);
   }
 
   return(commands);

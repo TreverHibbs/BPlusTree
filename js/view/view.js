@@ -108,22 +108,28 @@ const View = function() {
    */ 
   function renderCreateNode(animationCommands, value) { 
     if (bPlusTree.bPlusTreeRoot == undefined) {
+      this.nodeIndex = 0;
       bPlusTree.bPlusTreeRoot = BPlusTreeNode();
       bPlusTree.bPlusTreeRoot.pushValue(value); 
-      bPlusTree.bPlusTreeRoot.setID(nodeIndex++); 
+      bPlusTree.bPlusTreeRoot.setID(this.nodeIndex++); 
     } else {
       console.log('error, node already exists at this location');
     }
 
     createNode(animationCommands,
-               bPlusTree.bPlusTreeRoot.getValues,
-               bPlusTree.bPlusTreeRoot.getID());
+               bPlusTree.bPlusTreeRoot);
   
     return(animationCommands);
   }
 
 
   return {
+    nodeIndex,
+
+
+
+
+
     /**
      *  @desc - a function for animating a list of model commands
      *  @param Array $modelCommands - a array of model command objects to animate

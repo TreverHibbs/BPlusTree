@@ -8,6 +8,8 @@ var commands = [];
 describe('cmdConverter.js', function () {
   before(function () {
     ctx.clearRect(0, 0, 900, 600);
+    var objectManager = new ObjectManager();
+    var animationManager = new AnimationManager(objectManager);
   });
 
   describe('createCommand()', function() {
@@ -23,8 +25,6 @@ describe('cmdConverter.js', function () {
 
   describe('createNode()', function() {
     it('Should result in a root node being created with three vlalues', function() {
-      var objectManager = new ObjectManager();
-      var animationManager = new AnimationManager(objectManager);
       
       var animationCommands = [];
       bPlusTree = BPlusTree();
@@ -43,69 +43,7 @@ describe('cmdConverter.js', function () {
       console.log(bPlusTree.bPlusTreeRoot.getValues());
 
       animationManager.StartNewAnimation(animationCommands);
-    });
-  });
-    
-    
-  describe('createRoot()/addToNode() animation', function() {
-    it('Should create array of root insertion commands', function() {
-      createRoot(commands, 1);
-        console.log(commands);
-  
-      assert.deepEqual(commands,
-                       ["CreateBTreeNode<;>0<;>40<;>20<;>1<;>450<;>30<;>#f4e5e8<;>#a82d43",
-                        "SetText<;>0<;>1<;>0", "Step"],  
-                        "cmdConverter returns new animation command");
-    });
-  
-    it('Should result in list of commands to create and extend node', function() {
-      var nodeID = 0;
-      var valueIndex = 1;
-      addToNode(commands, 2, nodeID, valueIndex);
-      
-      assert.deepEqual(commands, 
-                       ["CreateBTreeNode<;>0<;>40<;>20<;>1<;>450<;>30<;>#f4e5e8<;>#a82d43",
-                        "SetText<;>0<;>1<;>0", "Step",  
-                        "SetNumElements<;>0<;>2",
-                        "SetText<;>0<;>2<;>1", "Step"],
-                        "cmdConverter returns new animation command");
-    });
 
-    it('Should result in a third value being added to root node', function() {
-      var nodeID = 0;
-      var valueIndex = 2;
-      addToNode(commands, 3, nodeID, valueIndex);
-      console.log(commands);
-      
-      assert.deepEqual(commands, 
-                       ["CreateBTreeNode<;>0<;>40<;>20<;>1<;>450<;>30<;>#f4e5e8<;>#a82d43",
-                        "SetText<;>0<;>1<;>0", "Step",  
-                        "SetNumElements<;>0<;>2",
-                        "SetText<;>0<;>2<;>1", "Step",
-                        "SetNumElements<;>0<;>3", 
-                        "SetText<;>0<;>3<;>2", "Step"],
-                        "cmdConverter returns new animation command");
-      
-      animationManager.StartNewAnimation(commands);
-    });
-  });
-  
-    
-  describe('highlightNode()', function() {
-    it('Should highlight the root node', function() {
-      highlightNode(commands, 0);
-  
-      assert.deepEqual(commands,
-                       ["CreateBTreeNode<;>0<;>40<;>20<;>1<;>450<;>30<;>#f4e5e8<;>#a82d43",
-                        "SetText<;>0<;>1<;>0", "Step",  
-                        "SetNumElements<;>0<;>2",
-                        "SetText<;>0<;>2<;>1", "Step",
-                        "SetNumElements<;>0<;>3", 
-                        "SetText<;>0<;>3<;>2", "Step",
-                        "SetHighlight<;>0<;>1", "Step"],
-                        "cmdConverter returns new animation command");
-
-      //animationManager.StartNewAnimation(commands);
     });
   });
 });
