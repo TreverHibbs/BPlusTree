@@ -19,6 +19,32 @@ describe('cmdConverter.js', function () {
                    "cmdConverter returns new animation command");
     });
   });
+
+
+  describe('createNode()', function() {
+    it('Should result in a root node being created with three vlalues', function() {
+      var objectManager = new ObjectManager();
+      var animationManager = new AnimationManager(objectManager);
+      
+      var animationCommands = [];
+      bPlusTree = BPlusTree();
+      bPlusTree.bPlusTreeRoot = BPlusTreeNode();
+      bPlusTree.bPlusTreeRoot.pushValue(1);
+      bPlusTree.bPlusTreeRoot.pushValue(2);
+      bPlusTree.bPlusTreeRoot.pushValue(3);
+      bPlusTree.bPlusTreeRoot.setID(0); 
+
+      console.log(bPlusTree.bPlusTreeRoot.getValues());
+      console.log(bPlusTree.bPlusTreeRoot.getValues);
+
+      createNode(animationCommands, bPlusTree.bPlusTreeRoot);
+                 
+      console.log(animationCommands);
+      console.log(bPlusTree.bPlusTreeRoot.getValues());
+
+      animationManager.StartNewAnimation(animationCommands);
+    });
+  });
     
     
   describe('createRoot()/addToNode() animation', function() {

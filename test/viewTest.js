@@ -74,6 +74,28 @@ describe('view-module', function () {
         assert.isTrue(bPlusTree.get(), 'should return true');
       });
     });
+
+    describe('create new BPlusTree for node testing', function() {
+      it('Should create new BPlusTree and log its root nodes to string', function() {
+        bPlusTree = BPlusTree();
+        console.log(bPlusTree.bPlusTreeRoot);
+
+        assert.isTrue(bPlusTree.get(), 'should return true');
+      });
+    });
+
+    describe('test getters and setters of BPlusTreeNode', function() {
+      it('Should set and get id and one value of BPlusTreeNode', function() {
+        bPlusTreeNode = BPlusTreeNode();
+        console.log(bPlusTreeNode);
+
+        bPlusTreeNode.setID(0);
+        bPlusTreeNode.pushValue(1);
+
+        assert.deepEqual(bPlusTreeNode.getID(), 0, 'id should equal 0');
+        assert.deepEqual(bPlusTreeNode.getValue(0), 1, 'value[0] should equal 1');
+      });
+    });
   });
 });
 

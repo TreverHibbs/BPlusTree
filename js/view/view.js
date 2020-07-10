@@ -106,10 +106,18 @@ const View = function() {
    *  @param int $value - the value of the root node,
    *  @return Array - the updated list of generated commands
    */ 
-  function renderCreateNode(animationCommands, value, nodeIndex) { 
-    bPlusTree 
+  function renderCreateNode(animationCommands, value) { 
+    if (bPlusTree.bPlusTreeRoot == undefined) {
+      bPlusTree.bPlusTreeRoot = BPlusTreeNode();
+      bPlusTree.bPlusTreeRoot.pushValue(value); 
+      bPlusTree.bPlusTreeRoot.setID(nodeIndex++); 
+    } else {
+      console.log('error, node already exists at this location');
+    }
 
-    createNode(animationCommands, value, nodeIndex);
+    createNode(animationCommands,
+               bPlusTree.bPlusTreeRoot.getValues,
+               bPlusTree.bPlusTreeRoot.getID());
   
     return(animationCommands);
   }
@@ -152,7 +160,7 @@ const View = function() {
                        command.valueIndex,
                        nodeIndex);
       } else if (command.name == "createNode") {
-        renderCreateNode(animationCommands, command.value, nodeIndex);
+        renderCreateNode(animationCommands, command.value);
       } else {
         return(false);
       }
