@@ -63,5 +63,17 @@ describe('view-module', function () {
       });
     });
   });
+
+
+  describe('BPlusTree.js', function() {
+    describe('create new BPlusTree', function() {
+      it('Should create new BPlusTree and log its to string func', function() {
+        bPlusTree = BPlusTree();
+        console.log(bPlusTree);
+
+        assert.isTrue(bPlusTree.get(), 'should return true');
+      });
+    });
+  });
 });
 

@@ -79,7 +79,7 @@ animationManager = new AnimationManager(objectManager);
  */ 
 const View = function() {
   const nodeIndex = 0; 
-
+  const bPlusTree = BPlusTree();
 
 
 
@@ -107,6 +107,8 @@ const View = function() {
    *  @return Array - the updated list of generated commands
    */ 
   function renderCreateNode(animationCommands, value, nodeIndex) { 
+    bPlusTree 
+
     createNode(animationCommands, value, nodeIndex);
   
     return(animationCommands);
