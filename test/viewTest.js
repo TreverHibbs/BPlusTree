@@ -24,7 +24,46 @@ describe('view-module', function () {
         view.animate(modelCommands);     
       });
     });
+
+    describe('renderCreateRoot()', function() {
+      it('Should result in root being animated', function() {
+        const view = View();
+        command = { "name":"createRoot", "value":1 };
+        modelCommands = [];
+
+
+        modelCommands.push(command)
+
     
+        view.animate(modelCommands);     
+      });
+
+      it('Should result in root being highlighted', function() {
+        const view = View();
+        command = { "name":"examineNode" };
+        modelCommands = [];
+
+
+        modelCommands.push(command)
+
+    
+        view.animate(modelCommands);     
+      });
+
+      it('Should result in value being added to root animation', function() {
+        const view = View();
+        command = { "name":"changeNodeValues", "values":[1, 2] };
+        modelCommands = [];
+
+
+        modelCommands.push(command)
+
+    
+        view.animate(modelCommands);     
+      });
+    });
+
+
     describe('renderAddValue()', function() {
       it('Should execute list of model commands', function() {
         var animationCommands = [];

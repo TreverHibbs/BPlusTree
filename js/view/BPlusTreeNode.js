@@ -43,6 +43,11 @@ const BPlusTreeNode = function() {
       this.id = num;
       return;
     },
+
+    setValues: function(values) {
+      this.values = values;
+      return;
+    },
     
     pushValue: function(num) {
       this.values.push(num);

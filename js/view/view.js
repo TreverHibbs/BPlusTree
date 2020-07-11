@@ -56,6 +56,7 @@ var BACKGROUND_COLOR = "#f4e5e8";
 var PRINT_COLOR = FOREGROUND_COLOR;
 
 var idIndex = 0;
+var HIGHLIGHT_VAL = 1;
 
 
 var canvas = document.getElementById("myCanvas");
@@ -82,9 +83,6 @@ const View = function() {
   const bPlusTree = BPlusTree();
 
 
-
-
-
   /*------------------------------------*\
     #RENDER-FUNCTIONS
   \*------------------------------------*/
@@ -107,27 +105,76 @@ const View = function() {
    *  @return Array - the updated list of generated commands
    */ 
   function renderCreateNode(animationCommands, value) { 
-    if (bPlusTree.bPlusTreeRoot == undefined) {
+    if (this.bPlusTree.bPlusTreeRoot == undefined) {
       this.nodeIndex = 0;
-      bPlusTree.bPlusTreeRoot = BPlusTreeNode();
-      bPlusTree.bPlusTreeRoot.pushValue(value); 
-      bPlusTree.bPlusTreeRoot.setID(this.nodeIndex++); 
+      this.bPlusTree.bPlusTreeRoot = BPlusTreeNode();
+      this.bPlusTree.bPlusTreeRoot.pushValue(value); 
+      this.bPlusTree.bPlusTreeRoot.setID(this.nodeIndex++); 
     } else {
       console.log('error, node already exists at this location');
     }
 
     createNode(animationCommands,
-               bPlusTree.bPlusTreeRoot);
+               this.bPlusTree.bPlusTreeRoot);
   
     return(animationCommands);
   }
 
 
+  /**
+   *  @desc renders the animation of inserting a root node
+   *  @param int $value - the value of the root node,
+   *  @return Array - the updated list of generated commands
+   */ 
+  function renderCreateRoot(animationCommands, value) { 
+    if (this.bPlusTree == undefined) {
+      this.bPlusTree = BPlusTree();
+      this.nodeIndex = 0;
+      this.bPlusTree.bPlusTreeRoot = BPlusTreeNode();
+      this.bPlusTree.bPlusTreeRoot.pushValue(value); 
+      this.bPlusTree.bPlusTreeRoot.setID(this.nodeIndex++); 
+    } else {
+      console.log('error: root already exists');
+    }
+
+    createNode(animationCommands,
+               this.bPlusTree.bPlusTreeRoot);
+  
+    return(animationCommands);
+  }
+  
+  /**
+   *  @desc renders a highlight animation
+   *  @param Array $animationCommands - an array of the generated animation
+   *                                    commands
+   *         int $stepIndex - the ID of the object currently being worked on
+   *  @return Array - the updated list of generated commands
+   */ 
+  function renderHighlightNode(animationCommands, stepIndex) {
+    highlightNode(animationCommands, stepIndex);
+
+    return(animationCommands);
+  }
+  
+  /**
+   *  @desc replaced node with new node with new values
+   *  @param Array $animationCommands - an array of the generated animation
+   *                                    commands
+   *         int $stepIndex - the ID of the object currently being worked on
+   *  @return Array - the updated list of generated commands
+   */ 
+  function renderChangeNodeValues(animationCommands, stepIndex, values) {
+    this.bPlusTree.bPlusTreeRoot.setValues(values);
+    
+    addValues(animationCommands, stepIndex,
+              this.bPlusTree.bPlusTreeRoot.getValues());
+
+    return(animationCommands);
+  }
+
+
   return {
-    nodeIndex,
-
-
-
+    nodeIndex, bPlusTree,
 
 
     /**
@@ -137,15 +184,16 @@ const View = function() {
      *                                    for use with recursive calls
      *  @return bool - on success return true else false
      */ 
-    animate: function(modelCommands, animationCommands) {
+    animate: function(modelCommands, animationCommands, stepIndex) {
       //variable declaration
       if (animationCommands == undefined) {
         var animationCommands = [];
       }
+      if (stepIndex == undefined) {
+        var stepIndex = 0;
+      }
       var command = {};
-      
-      
-
+      //the current index of the iteration loop
 
 
       if (modelCommands.length == 0) {
@@ -167,12 +215,18 @@ const View = function() {
                        nodeIndex);
       } else if (command.name == "createNode") {
         renderCreateNode(animationCommands, command.value);
+      } else if (command.name == "createRoot") { 
+        renderCreateRoot(animationCommands, command.value);
+      } else if (command.name == "examineNode") {
+        renderHighlightNode(animationCommands, stepIndex);
+      } else if (command.name == "changeNodeValues") {
+        renderChangeNodeValues(animationCommands, stepIndex, command.values);
       } else {
         return(false);
       }
 
 
-      this.animate(modelCommands, animationCommands);
+      this.animate(modelCommands, animationCommands, stepIndex);
       return(true);
 
     }
@@ -200,9 +254,15 @@ const View = function() {
  * $value - value to insert or delete
  * $valueIndex - index/position of the value to be deleted/inserted within a node
  *
+ * CREATE-ROOT
+ * { "name":"createRoot", "value":1 }
  *
  * INSERT-COMMAND
  * { "name":"insert", "value":1 "valueIndex":0 } 
+ * 
+ * LOOK-AT-NODE
+ *
+ *
  *
  */
 

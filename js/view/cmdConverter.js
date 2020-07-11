@@ -76,7 +76,7 @@ function createNode(commands, bPlusTreeNode) {
  *  @return Array - the updated list of generated commands
  */ 
 function highlightNode(commands, nodeID) {
-  command = createCommand("SetHighlight", nodeID, 1);
+  command = createCommand("SetHighlight", nodeID, HIGHLIGHT_VAL);
   commands.push(command);
   command = createCommand("Step");
   commands.push(command);
@@ -93,11 +93,12 @@ function highlightNode(commands, nodeID) {
  *         int $valueIndex - where in the node to place the value
  *  @return Array $commands - The modified array of commands
  */ 
-function addValue(commands, nodeID, values) {
-  command = createCommand("SetNumElements", nodeID, (valueIndex+1)); 
+function addValues(commands, nodeID, values) {
+  command = createCommand("SetNumElements", nodeID, values.length); 
   commands.push(command);
-  command = createCommand("SetText", nodeID, value, valueIndex);
-  commands.push(command);
+  
+  genSetTextCmd(commands, nodeID, values);
+
   command = createCommand("Step");
   commands.push(command);
 }
