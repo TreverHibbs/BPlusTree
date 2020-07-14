@@ -8,7 +8,6 @@
 
 
 
-//canvas initialization
 /*
  * CONTENTS
  *
@@ -79,7 +78,7 @@ animationManager = new AnimationManager(objectManager);
  *  @return bool - a animate function for animating model commands
  */ 
 const View = function() {
-  const nodeIndex = 0; 
+  let nodeIndex = 0; 
   const bPlusTree = BPlusTree();
 
 
@@ -127,31 +126,31 @@ const View = function() {
    *  @return Array - the updated list of generated commands
    */ 
   function renderCreateRoot(animationCommands, value) { 
-    if (this.bPlusTree == undefined) {
-      this.bPlusTree = BPlusTree();
-      this.nodeIndex = 0;
-      this.bPlusTree.bPlusTreeRoot = BPlusTreeNode();
-      this.bPlusTree.bPlusTreeRoot.pushValue(value); 
-      this.bPlusTree.bPlusTreeRoot.setID(this.nodeIndex++); 
+    if (bPlusTree.BPlusTreeRoot == null) {
+      bPlusTree.bPlusTreeRoot = BPlusTreeNode();
+      bPlusTree.bPlusTreeRoot.pushValue(value); 
+      bPlusTree.bPlusTreeRoot.setID(nodeIndex++); 
     } else {
       console.log('error: root already exists');
     }
 
     createNode(animationCommands,
-               this.bPlusTree.bPlusTreeRoot);
+               bPlusTree.bPlusTreeRoot);
   
     return(animationCommands);
   }
+
   
   /**
    *  @desc renders a highlight animation
    *  @param Array $animationCommands - an array of the generated animation
    *                                    commands
-   *         int $stepIndex - the ID of the object currently being worked on
+   *         int $nodeIndex - the ID of the object currently being worked on
    *  @return Array - the updated list of generated commands
    */ 
-  function renderHighlightNode(animationCommands, stepIndex) {
-    highlightNode(animationCommands, stepIndex);
+  function renderHighlightNode(animationCommands, nodeIndex) {
+    highlightNode(animationCommands, nodeIndex);
+    unHighlightNode(animationCommands, nodeIndex);
 
     return(animationCommands);
   }
@@ -160,19 +159,22 @@ const View = function() {
    *  @desc replaced node with new node with new values
    *  @param Array $animationCommands - an array of the generated animation
    *                                    commands
-   *         int $stepIndex - the ID of the object currently being worked on
+   *         int $nodeIndex - the ID of the object currently being worked on
    *  @return Array - the updated list of generated commands
    */ 
-  function renderChangeNodeValues(animationCommands, stepIndex, values) {
-    this.bPlusTree.bPlusTreeRoot.setValues(values);
+  function renderChangeNodeValues(animationCommands, nodeIndex, values) {
+    bPlusTree.bPlusTreeRoot.setValues(values);
     
-    addValues(animationCommands, stepIndex,
-              this.bPlusTree.bPlusTreeRoot.getValues());
+    addValues(animationCommands, nodeIndex,
+              bPlusTree.bPlusTreeRoot.getValues());
 
     return(animationCommands);
   }
 
 
+  /*------------------------------------*\
+    #RETURN-View-OBJECT
+  \*------------------------------------*/
   return {
     nodeIndex, bPlusTree,
 
@@ -184,13 +186,13 @@ const View = function() {
      *                                    for use with recursive calls
      *  @return bool - on success return true else false
      */ 
-    animate: function(modelCommands, animationCommands, stepIndex) {
+    animate: function(modelCommands, animationCommands, nodeIndex) {
       //variable declaration
       if (animationCommands == undefined) {
         var animationCommands = [];
       }
-      if (stepIndex == undefined) {
-        var stepIndex = 0;
+      if (nodeIndex == undefined) {
+        var nodeIndex = 0;
       }
       var command = {};
       //the current index of the iteration loop
@@ -218,15 +220,15 @@ const View = function() {
       } else if (command.name == "createRoot") { 
         renderCreateRoot(animationCommands, command.value);
       } else if (command.name == "examineNode") {
-        renderHighlightNode(animationCommands, stepIndex);
+        renderHighlightNode(animationCommands, nodeIndex);
       } else if (command.name == "changeNodeValues") {
-        renderChangeNodeValues(animationCommands, stepIndex, command.values);
+        renderChangeNodeValues(animationCommands, nodeIndex, command.values);
       } else {
         return(false);
       }
 
 
-      this.animate(modelCommands, animationCommands, stepIndex);
+      this.animate(modelCommands, animationCommands, nodeIndex);
       return(true);
 
     }

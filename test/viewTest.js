@@ -27,7 +27,7 @@ describe('view-module', function () {
 
     describe('renderCreateRoot()', function() {
       it('Should result in root being animated', function() {
-        const view = View();
+        //const view = View();
         command = { "name":"createRoot", "value":1 };
         modelCommands = [];
 
@@ -35,25 +35,23 @@ describe('view-module', function () {
         modelCommands.push(command)
 
     
-        view.animate(modelCommands);     
+        //view.animate(modelCommands);     
       });
 
       it('Should result in root being highlighted', function() {
-        const view = View();
+        //const view = View();
         command = { "name":"examineNode" };
-        modelCommands = [];
 
 
         modelCommands.push(command)
 
     
-        view.animate(modelCommands);     
+        //view.animate(modelCommands);     
       });
 
       it('Should result in value being added to root animation', function() {
         const view = View();
         command = { "name":"changeNodeValues", "values":[1, 2] };
-        modelCommands = [];
 
 
         modelCommands.push(command)

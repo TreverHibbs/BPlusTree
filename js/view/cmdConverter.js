@@ -86,6 +86,23 @@ function highlightNode(commands, nodeID) {
 
 
 /**
+ *  @desc unhighlight a node
+ *  @param Array $commands - an Array of animation libaray commands.
+ *         int $nodeID - the id of the node to highlight
+ *  @return Array - the updated list of generated commands
+ */ 
+function unHighlightNode(commands, nodeID) {
+  //third argument site highlight to zero.
+  command = createCommand("SetHighlight", nodeID, 0);
+  commands.push(command);
+  command = createCommand("Step");
+  commands.push(command);
+
+  return(commands);
+}
+
+
+/**
  *  @desc adds a value to a existing node.
  *  @param Array $commands - an Array of animation libaray commands.
  *         int $value - the value to add to existing node,
