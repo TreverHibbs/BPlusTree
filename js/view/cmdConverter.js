@@ -65,6 +65,26 @@ function createNode(commands, bPlusTreeNode) {
 
 
 /**
+ *  @desc animate an edge connection between two animated node objects
+ *  @param BPlusTreeNode-Object $selectedNode - the parent node
+ *         BPlusTreeNode-Object $selectedNodeChild - the child node
+ *  @return Array - the updated list of generated commands
+ */ 
+function connectNodes(commands, selectedNode, selectedNodeChild) {
+  let command = createCommand("Connect",
+                              selectedNode.getID(),
+                              selectedNodeChild.getID(),
+                              LINK_COLOR,
+                              false,
+                              0.0,
+                              false);
+  commands.push(command);
+
+  return(commands);
+}
+
+
+/**
  *  @desc highlight node that is currently being examined in the algorithm
  *  @param Array $commands - an Array of animation libaray commands.
  *         int $nodeID - the id of the node to highlight

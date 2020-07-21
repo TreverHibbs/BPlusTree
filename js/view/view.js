@@ -190,14 +190,26 @@ const View = function() {
 
      //update B-plus-tree datastructure
      selectedNode.setValues(values);
-     createChild(bPlusTree.bPlusTreeRoot, leftValues, firstChildIndex,
-                 objectIndex++, objectIndex++);
-     createChild(bPlusTree.bPlusTreeRoot, leftValues, secondChildIndex,
-                 objectIndex++, objectIndex++);
+     const firstChild = createChild(bPlusTree.bPlusTreeRoot,
+                                    leftValues,
+                                    firstChildIndex,
+                                    objectIndex++,
+                                    objectIndex++);
+     const secondChild = createChild(bPlusTree.bPlusTreeRoot,
+                                     leftValues,
+                                     secondChildIndex,
+                                     objectIndex++,
+                                     objectIndex++);
 
      //animate visuals
-     createNode(animationCommands, getChild(selectedNode, firstChildIndex, 0));
-     createNode(animationCommands, getChild(selectedNode, secondChildIndex, 0));
+     createNode(animationCommands, getChild(selectedNode,
+                                   firstChildIndex));
+     createNode(animationCommands, getChild(selectedNode,
+                                    secondChildIndex));
+
+     connectNodes(animationCommands, selectedNode, firstChild);
+     connectNodes(animationCommands, selectedNode, secondChild);
+
      addStep(animationCommands);
 
 

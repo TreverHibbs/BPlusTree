@@ -129,7 +129,7 @@ function createChild(parentNode, values, childIndex, nodeID, edgeID) {
   newEdge = makeBPlusTreeEdge(parentNode, newChild, edgeID);
   parentNode.addChild(newChild, newEdge, childIndex);
 
-  return(true);
+  return(newChild);
 }
 
 function getChild(parentNode, childIndex) {
