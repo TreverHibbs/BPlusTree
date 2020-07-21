@@ -1,69 +1,43 @@
+'use strict';
+
 var assert = chai.assert;
 
 
 describe('view-module', function () {
   describe('view.js', function() {
-    before(function () {
-      ctx.clearRect(0, 0, 900, 600);
-    });
+    //before(function () {
+    //  ctx.clearRect(0, 0, 900, 600);
+    //});
 
 
 
 
 
-    describe('renderCreateNode()', function() {
-      it('Should execute list of model commands', function() {
-        const view = View();
-        command = { "name":"createNode", "value":1 };
-        modelCommands = [];
+    describe('The rendering of inserting [1, 2, 3] when n = 1', function() {
+      const modelCommands = [];
+      const view = View();
 
-
-        modelCommands.push(command)
-
-    
-        view.animate(modelCommands);     
-      });
-    });
-
-    describe('renderCreateRoot()', function() {
       it('Should result in root being animated', function() {
         //const view = View();
-        command = { "name":"createRoot", "value":1 };
-        modelCommands = [];
-
-
+        let command = { "name":"createNode", "values":[1] };
         modelCommands.push(command)
 
-    
-        //view.animate(modelCommands);     
-      });
-
-      it('Should result in root being highlighted', function() {
-        //const view = View();
         command = { "name":"examineNode" };
-
-
         modelCommands.push(command)
 
-    
-        //view.animate(modelCommands);     
-      });
-
-      it('Should result in value being added to root animation', function() {
-        const view = View();
-        command = { "name":"changeNodeValues", "values":[1, 2] };
-
-
+        command = { "name":"changeNodeValues", "values":[1, 2, 3] };
         modelCommands.push(command)
 
-    
-        view.animate(modelCommands);     
+        command = { "name":"splitNode", "values":[2], "leftValues":[1], "rightValues":[3] };
+        modelCommands.push(command)
+
+        view.animate(modelCommands);
       });
     });
 
 
     describe('renderAddValue()', function() {
-      it('Should execute list of model commands', function() {
+      xit('Should execute list of model commands', function() {
         var animationCommands = [];
         command = { "name":"addValue", "value":1, "valueIndex":1 }
 
@@ -76,7 +50,7 @@ describe('view-module', function () {
 
 
     describe('View() given createNode command', function() {
-      it('Should execute createNode command', function() {
+      xit('Should execute createNode command', function() {
         var modelCommands = [
           { "name":"createNode", "value":1 }
         ]; 
@@ -86,7 +60,7 @@ describe('view-module', function () {
     });
     
     describe('view() given createNode command and addValud command', function() {
-      it('Should execute createNode command and addValue command', function() {
+      xit('Should execute createNode command and addValue command', function() {
 
         var modelCommands = [
           { "name":"createNode", "value":1 }
@@ -104,7 +78,7 @@ describe('view-module', function () {
 
   describe('BPlusTree.js', function() {
     describe('create new BPlusTree', function() {
-      it('Should create new BPlusTree and log its to string func', function() {
+      xit('Should create new BPlusTree and log its to string func', function() {
         bPlusTree = BPlusTree();
         console.log(bPlusTree);
 
@@ -113,7 +87,7 @@ describe('view-module', function () {
     });
 
     describe('create new BPlusTree for node testing', function() {
-      it('Should create new BPlusTree and log its root nodes to string', function() {
+      xit('Should create new BPlusTree and log its root nodes to string', function() {
         bPlusTree = BPlusTree();
         console.log(bPlusTree.bPlusTreeRoot);
 
@@ -122,15 +96,40 @@ describe('view-module', function () {
     });
 
     describe('test getters and setters of BPlusTreeNode', function() {
-      it('Should set and get id and one value of BPlusTreeNode', function() {
-        bPlusTreeNode = BPlusTreeNode();
-        console.log(bPlusTreeNode);
+      it('Should set and get the id of a node', function() {
+        const myBTreeNode = BPlusTreeNode([1], 0);
+        console.log(myBTreeNode.getID());
+      });
 
-        bPlusTreeNode.setID(0);
-        bPlusTreeNode.pushValue(1);
+      it('Should set and get values of a BPlusTreeNode', function() {
+        const myBTreeNode = BPlusTreeNode([1, 2], 0);
+        myBTreeNode.setValues([1, 2, 3]);
+        console.log(myBTreeNode.getValues());
+      });
+    });
 
-        assert.deepEqual(bPlusTreeNode.getID(), 0, 'id should equal 0');
-        assert.deepEqual(bPlusTreeNode.getValue(0), 1, 'value[0] should equal 1');
+    describe.skip('test createChild() and getChild()', function() {
+      let objectIndex = 0;
+      const firstChildIndex = 0;
+      const secondChildIndex = 1;
+      const firstValues = [1];
+      const secondValues = [3];
+      const selectedNode = BPlusTreeNode([1, 2, 3], objectIndex++);
+      it('Should create a parent node and give it two children', function() {
+
+
+        console.log(selectedNode);
+
+        createChild(selectedNode, firstValues, firstChildIndex,
+                    objectIndex++, objectIndex++);
+        createChild(selectedNode, secondValues, secondChildIndex,
+                    objectIndex++, objectIndex++);
+
+        console.log(selectedNode);
+      });
+
+      it('Should return the specified child of the selected node', function() {
+        console.log(getChild(selectedNode, firstChildIndex));
       });
     });
   });

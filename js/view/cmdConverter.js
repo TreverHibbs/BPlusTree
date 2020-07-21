@@ -60,11 +60,6 @@ function createNode(commands, bPlusTreeNode) {
 
   genSetTextCmd(commands, nodeID, values);
 
-  command = createCommand("Step");
-  commands.push(command);
-  nodeID++;
-
-
   return(commands);
 }
 
@@ -77,8 +72,6 @@ function createNode(commands, bPlusTreeNode) {
  */ 
 function highlightNode(commands, nodeID) {
   command = createCommand("SetHighlight", nodeID, HIGHLIGHT_VAL);
-  commands.push(command);
-  command = createCommand("Step");
   commands.push(command);
 
   return(commands);
@@ -94,8 +87,6 @@ function highlightNode(commands, nodeID) {
 function unHighlightNode(commands, nodeID) {
   //third argument site highlight to zero.
   command = createCommand("SetHighlight", nodeID, 0);
-  commands.push(command);
-  command = createCommand("Step");
   commands.push(command);
 
   return(commands);
@@ -115,9 +106,13 @@ function addValues(commands, nodeID, values) {
   commands.push(command);
   
   genSetTextCmd(commands, nodeID, values);
+}
 
+function addStep(commands) {
   command = createCommand("Step");
   commands.push(command);
+
+  return(commands);
 }
 
 

@@ -78,7 +78,7 @@ animationManager = new AnimationManager(objectManager);
  *  @return bool - a animate function for animating model commands
  */ 
 const View = function() {
-  let nodeIndex = 0; 
+  let objectIndex = 0; 
   const bPlusTree = BPlusTree();
 
 
@@ -94,6 +94,7 @@ const View = function() {
    */ 
   function renderAddValue(animationCommands, value, valueIndex, nodeID) { 
     addValue(animationCommands, value, valueIndex, nodeID);
+    addStep(animationCommands);
   
     return(animationCommands);
   }
@@ -103,18 +104,16 @@ const View = function() {
    *  @param int $value - the value of the root node,
    *  @return Array - the updated list of generated commands
    */ 
-  function renderCreateNode(animationCommands, value) { 
-    if (this.bPlusTree.bPlusTreeRoot == undefined) {
-      this.nodeIndex = 0;
-      this.bPlusTree.bPlusTreeRoot = BPlusTreeNode();
-      this.bPlusTree.bPlusTreeRoot.pushValue(value); 
-      this.bPlusTree.bPlusTreeRoot.setID(this.nodeIndex++); 
+  function renderCreateNode(animationCommands, values) { 
+    if (bPlusTree.bPlusTreeRoot == null) {
+      bPlusTree.bPlusTreeRoot = BPlusTreeNode(values, objectIndex++);
     } else {
       console.log('error, node already exists at this location');
     }
 
     createNode(animationCommands,
-               this.bPlusTree.bPlusTreeRoot);
+               bPlusTree.bPlusTreeRoot);
+    addStep(animationCommands);
   
     return(animationCommands);
   }
@@ -128,14 +127,14 @@ const View = function() {
   function renderCreateRoot(animationCommands, value) { 
     if (bPlusTree.BPlusTreeRoot == null) {
       bPlusTree.bPlusTreeRoot = BPlusTreeNode();
-      bPlusTree.bPlusTreeRoot.pushValue(value); 
-      bPlusTree.bPlusTreeRoot.setID(nodeIndex++); 
+      bPlusTree.bPlusTreeRoot.pushValue(value, objectIndex++); 
     } else {
       console.log('error: root already exists');
     }
 
     createNode(animationCommands,
                bPlusTree.bPlusTreeRoot);
+    addStep(animationCommands);
   
     return(animationCommands);
   }
@@ -145,12 +144,13 @@ const View = function() {
    *  @desc renders a highlight animation
    *  @param Array $animationCommands - an array of the generated animation
    *                                    commands
-   *         int $nodeIndex - the ID of the object currently being worked on
+   *         int $selectedNodeID - the ID of the object currently being worked on
    *  @return Array - the updated list of generated commands
    */ 
-  function renderHighlightNode(animationCommands, nodeIndex) {
-    highlightNode(animationCommands, nodeIndex);
-    unHighlightNode(animationCommands, nodeIndex);
+  function renderHighlightNode(animationCommands, selectedNodeID) {
+    highlightNode(animationCommands, selectedNodeID);
+    unHighlightNode(animationCommands, selectedNodeID);
+    addStep(animationCommands);
 
     return(animationCommands);
   }
@@ -159,24 +159,57 @@ const View = function() {
    *  @desc replaced node with new node with new values
    *  @param Array $animationCommands - an array of the generated animation
    *                                    commands
-   *         int $nodeIndex - the ID of the object currently being worked on
+   *         int $selectedNodeID - the ID of the object currently being worked on
    *  @return Array - the updated list of generated commands
    */ 
-  function renderChangeNodeValues(animationCommands, nodeIndex, values) {
+  function renderChangeNodeValues(animationCommands, selectedNodeID, values) {
     bPlusTree.bPlusTreeRoot.setValues(values);
     
-    addValues(animationCommands, nodeIndex,
+    addValues(animationCommands, selectedNodeID,
               bPlusTree.bPlusTreeRoot.getValues());
+    addStep(animationCommands);
 
     return(animationCommands);
   }
+
+  /**
+   *  @desc animate the splitting of a node
+   *  @param Array $animationCommands - an array of the generated animation
+   *                                    commands
+   *         Array $command.values - values of the original node after split
+   *         Array $command.leftValues - values of left node
+   *         Array $command.rightValues - values of right node
+   *  @return Array - the updated list of generated commands
+   */ 
+   function renderSplitNode(animationCommands, selectedNodeID,
+                            values, leftValues, rightValues) {
+     const firstChildIndex = 0;
+     const secondChildIndex = 1;
+     const selectedNode = bPlusTree.bPlusTreeRoot;
+
+
+     //update B-plus-tree datastructure
+     selectedNode.setValues(values);
+     createChild(bPlusTree.bPlusTreeRoot, leftValues, firstChildIndex,
+                 objectIndex++, objectIndex++);
+     createChild(bPlusTree.bPlusTreeRoot, leftValues, secondChildIndex,
+                 objectIndex++, objectIndex++);
+
+     //animate visuals
+     createNode(animationCommands, getChild(selectedNode, firstChildIndex, 0));
+     createNode(animationCommands, getChild(selectedNode, secondChildIndex, 0));
+     addStep(animationCommands);
+
+
+     return(animationCommands);
+   }
 
 
   /*------------------------------------*\
     #RETURN-View-OBJECT
   \*------------------------------------*/
   return {
-    nodeIndex, bPlusTree,
+    objectIndex, bPlusTree,
 
 
     /**
@@ -186,16 +219,9 @@ const View = function() {
      *                                    for use with recursive calls
      *  @return bool - on success return true else false
      */ 
-    animate: function(modelCommands, animationCommands, nodeIndex) {
+    animate: function(modelCommands, animationCommands = [], selectedNodeID = 0) {
       //variable declaration
-      if (animationCommands == undefined) {
-        var animationCommands = [];
-      }
-      if (nodeIndex == undefined) {
-        var nodeIndex = 0;
-      }
-      var command = {};
-      //the current index of the iteration loop
+      let command = {};
 
 
       if (modelCommands.length == 0) {
@@ -214,23 +240,28 @@ const View = function() {
         renderAddValue(animationCommands,
                        command.value,
                        command.valueIndex,
-                       nodeIndex);
+                       selectedNodeID);
       } else if (command.name == "createNode") {
-        renderCreateNode(animationCommands, command.value);
+        renderCreateNode(animationCommands, command.values);
       } else if (command.name == "createRoot") { 
-        renderCreateRoot(animationCommands, command.value);
+        renderCreateRoot(animationCommands, command.values);
       } else if (command.name == "examineNode") {
-        renderHighlightNode(animationCommands, nodeIndex);
+        renderHighlightNode(animationCommands, selectedNodeID);
       } else if (command.name == "changeNodeValues") {
-        renderChangeNodeValues(animationCommands, nodeIndex, command.values);
+        renderChangeNodeValues(animationCommands, selectedNodeID, command.values);
+      } else if (command.name == "splitNode") {
+        renderSplitNode(animationCommands,
+                        selectedNodeID,
+                        command.values,
+                        command.leftValues,
+                        command.rightValues);
       } else {
         return(false);
       }
 
 
-      this.animate(modelCommands, animationCommands, nodeIndex);
+      this.animate(modelCommands, animationCommands, selectedNodeID);
       return(true);
-
     }
   }
 }
@@ -244,27 +275,67 @@ const View = function() {
 \*------------------------------------*/
 
 /**
- * COMMAND-STRUCTURE
+ * ***IMPORTANT-NOTE***
+ * As I implement these commands I am sure that the details will change. I will
+ * update this list as things are finalized.
  *
+ * ***JSON-OBJ-STRUCTURE***
  * { 
  *   "name":"$name",
  *   "value":"$value",
  *   "valueIndex":"$valueIndex",
  * }  
  * 
- * $name - the name of the command
- * $value - value to insert or delete
- * $valueIndex - index/position of the value to be deleted/inserted within a node
+ * ***COMAND-LIST***
+ * @common-parameters - $name - the name of the command 
+ *                      $value - value to insert or delete
  *
  * CREATE-ROOT
- * { "name":"createRoot", "value":1 }
+ * { "name":"createNode", "value":1 }
  *
- * INSERT-COMMAND
- * { "name":"insert", "value":1 "valueIndex":0 } 
+ * EXAMINE-CHILD
+ * @description - This command is used to navigate the B+ Tree. Whenever a 
+ *                nodes values are being examined this should be queued first.
+ * @parameters $child - The index of the branch to examine. If it is the first
+ *                      command in the queue child is not required.
+ * { "name":"examineChild", "child":"0"}
+ *
+ * EXAMINE-PARENT
+ * @description - This command is used to navigate the B+ Tree. 
+ * @usage - parent of the last node operated on needs to be updated/examined
+ * { "name":"examineParent" }
  * 
- * LOOK-AT-NODE
+ * CHANGE-NODE-VALUES
+ * @description - Sets the values of a node. The values list must be in order.
+ * @parameters - $values - The values to set
+ * @usage - this command is pushed whenever a nodes values are updated without
+ *          the need for a split or a merge. This includes deleting
+ * { "name":"changeNodeValues", "values":[1, 2, ...] }
  *
+ * SPLIT-NODE
+ * @description - This command will animate a split
+ * @parameters $values - The new values of the parent node after the split
+ *             $leftValues - The values of the left child node after split
+ *             $rightValues - The values of the right child node after split
+ * @usage - when a nodes is split push this command to communicate the results 
+ *          of the split
+ * { "name":"splitNode", "values":[1, 2, ...], "leftValues":[1, 2, ...],
+ *   "rightValues":[1, 2, ...] }
  *
+ * ********************
+ * ***IMPORTANT-NOTE***
+ * ********************
+ * Everying past this point is very fuzzy and is almost certainly going to change.
+ *
+ * DELETE-NODE
+ * @description - animate the deletion of a node. Do not use this is merge is
+ *                going to occur.
+ * { "name":"deleteNode" }
+ *
+ * MERGE-CHILD
+ * @description - animate the mergin of a parent node with its child
+ * @parameters $values - values of the resulting node.
+ * { "name":"mergeChild" "values":[1, 2, ...]}
  *
  */
 
