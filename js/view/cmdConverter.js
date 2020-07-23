@@ -70,16 +70,18 @@ function createNode(commands, bPlusTreeNode) {
  *         BPlusTreeNode-Object $selectedNodeChild - the child node
  *  @return Array - the updated list of generated commands
  */ 
-function connectNodes(commands, selectedNode, selectedNodeChild) {
+function connectNodes(commands, selectedNode, selectedNodeChild, anchorPoint = 0) {
   let command = createCommand("Connect",
                               selectedNode.getID(),
                               selectedNodeChild.getID(),
                               LINK_COLOR,
-                              false,
-                              0.0,
-                              false);
+                              0,
+                              0,
+                              "",
+                              anchorPoint);
   commands.push(command);
 
+  console.log(commands);
   return(commands);
 }
 
@@ -128,8 +130,30 @@ function addValues(commands, nodeID, values) {
   genSetTextCmd(commands, nodeID, values);
 }
 
+
+/**
+ *  @desc adds a step command to animation command queue
+ *  @param Array $commands - an Array of animation libaray commands.
+ *  @return Array $commands - The modified array of commands
+ */ 
 function addStep(commands) {
   command = createCommand("Step");
+  commands.push(command);
+
+  return(commands);
+}
+
+
+/**
+ *  @desc adds a step command to animation command queue
+ *  @param Array $commands - an Array of animation libaray commands.
+ *  @return Array $commands - The modified array of commands
+ */ 
+function moveNode(commands, node) {
+  const nodeID = node.getID();
+  const nodePosition = node.getPosition();
+  const nodeHeight = determineNodeHeight(node.getRow());
+  command = createCommand("Move", nodeID, nodePosition, nodeHeight);
   commands.push(command);
 
   return(commands);
@@ -184,5 +208,14 @@ function genSetTextCmd(commands, nodeID, values,
   }
 
   return(commands);
+}
+
+/**
+ *  @desc convert the row of a node to it's height
+ *  @param BPlusTreeNode $nodeRow - the node to have it's height determined.
+ *  @return int expression - the x coordinate of the node
+ */ 
+function determineNodeHeight(nodeRow) {
+  return(STARTING_Y + nodeRow * NODE_VERTICAL_SPACING);
 }
 

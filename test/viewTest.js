@@ -106,6 +106,78 @@ describe('view-module', function () {
         myBTreeNode.setValues([1, 2, 3]);
         console.log(myBTreeNode.getValues());
       });
+
+      it('should set and then get the postion of the node', function() {
+        const testPosition = [0, 0];
+        const myBTreeNode = BPlusTreeNode([1, 2], 0, testPosition);
+
+        console.log(myBTreeNode.getPosition());
+        assert.equal(myBTreeNode.getPosition(), testPosition);
+      });
+
+      it('Should return number of children of parent node', function() {
+        const testPosition = [0, 0];
+        const firstChildIndex = 0;
+        const secondChildIndex = 1;
+        const firstValues = [1];
+        const secondValues = [3];
+
+        let objectIndex = 0;
+
+
+        const selectedNode = BPlusTreeNode([1, 2, 3],
+                                           objectIndex++,
+                                           testPosition);
+
+        createChild(selectedNode, firstValues, firstChildIndex,
+                    objectIndex++, objectIndex++);
+        createChild(selectedNode, secondValues, secondChildIndex,
+                    objectIndex++, objectIndex++);
+
+        const childNum = selectedNode.getChildAmount();
+        console.log(childNum);
+        assert.equal(2, childNum);
+      });
+
+      it('Should determine the postion of children nodes in a row', function() {
+        const childrenAmount = 2;
+        const firstChildPosition = 0;
+
+        const childrenPositions = getChildPositions(childrenAmount, firstChildPosition);
+        console.log(childrenPositions);
+
+        assert.deepEqual(childrenPositions, [0, NODE_SPACING]);
+      });
+
+      it('Should update the position of children', function() {
+        const testPosition = [0, 0];
+        const firstChildIndex = 0;
+        const secondChildIndex = 1;
+        const firstValues = [1];
+        const secondValues = [3];
+        const childPositions = [0, 15];
+
+        let objectIndex = 0;
+
+
+        const selectedNode = BPlusTreeNode([1, 2, 3],
+                                           objectIndex++,
+                                           testPosition);
+
+        const firstChild = createChild(selectedNode, firstValues, firstChildIndex,
+                    objectIndex++, objectIndex++);
+        const secondChild = createChild(selectedNode, secondValues, secondChildIndex,
+                    objectIndex++, objectIndex++);
+
+        updateChildPositions(selectedNode, childPositions);
+        console.log(selectedNode);
+        console.log(firstChild.getPosition());
+        console.log(secondChild.getPosition());
+
+
+        assert.deepEqual(secondChild.getPosition(), childPositions[secondChildIndex]);
+        assert.deepEqual(firstChild.getPosition(), childPositions[firstChildIndex]);
+      });
     });
 
     describe.skip('test createChild() and getChild()', function() {

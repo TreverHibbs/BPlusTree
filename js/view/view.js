@@ -27,7 +27,7 @@
   #CONSTANTS
 \*------------------------------------*/
 
-var STARTING_X = 450; STARTING_Y = 300;
+var STARTING_X = 450; STARTING_Y = 30;
 var DEFAULT_SPEED = 20;
 var FIRST_PRINT_POS_X = 50;
 var PRINT_VERTICAL_GAP = 20;
@@ -38,8 +38,8 @@ var MIN_MAX_DEGREE = 3;
 var MAX_MAX_DEGREE = 7;
 
 var HEIGHT_DELTA  = 50;
-var NODE_SPACING = 15; 
-var STARTING_Y = 30;
+var NODE_SPACING = 50; 
+const NODE_VERTICAL_SPACING = 60;
 var WIDTH_PER_ELEM = 40;
 var NODE_HEIGHT = 20;
 
@@ -79,6 +79,8 @@ animationManager = new AnimationManager(objectManager);
  */ 
 const View = function() {
   let objectIndex = 0; 
+  let selectedPosition = [STARTING_X];
+
   const bPlusTree = BPlusTree();
 
 
@@ -104,9 +106,11 @@ const View = function() {
    *  @param int $value - the value of the root node,
    *  @return Array - the updated list of generated commands
    */ 
-  function renderCreateNode(animationCommands, values) { 
+  function renderCreateNode(animationCommands, values, selectedPosition) { 
     if (bPlusTree.bPlusTreeRoot == null) {
-      bPlusTree.bPlusTreeRoot = BPlusTreeNode(values, objectIndex++);
+      bPlusTree.bPlusTreeRoot = BPlusTreeNode(values,
+                                              objectIndex++,
+                                              selectedPosition);
     } else {
       console.log('error, node already exists at this location');
     }
@@ -194,12 +198,14 @@ const View = function() {
                                     leftValues,
                                     firstChildIndex,
                                     objectIndex++,
-                                    objectIndex++);
+                                    objectIndex++,
+                                    selectedPosition);
      const secondChild = createChild(bPlusTree.bPlusTreeRoot,
                                      leftValues,
                                      secondChildIndex,
                                      objectIndex++,
-                                     objectIndex++);
+                                     objectIndex++,
+                                     selectedPosition);
 
      //animate visuals
      createNode(animationCommands, getChild(selectedNode,
@@ -207,8 +213,14 @@ const View = function() {
      createNode(animationCommands, getChild(selectedNode,
                                     secondChildIndex));
 
-     connectNodes(animationCommands, selectedNode, firstChild);
-     connectNodes(animationCommands, selectedNode, secondChild);
+     connectNodes(animationCommands, selectedNode, firstChild, firstChildIndex);
+     connectNodes(animationCommands, selectedNode, secondChild, secondChildIndex);
+
+
+     determineChildPositions(selectedNode);
+
+     moveNode(animationCommands, firstChild);
+     moveNode(animationCommands, secondChild);
 
      addStep(animationCommands);
 
@@ -254,7 +266,7 @@ const View = function() {
                        command.valueIndex,
                        selectedNodeID);
       } else if (command.name == "createNode") {
-        renderCreateNode(animationCommands, command.values);
+        renderCreateNode(animationCommands, command.values, selectedPosition);
       } else if (command.name == "createRoot") { 
         renderCreateRoot(animationCommands, command.values);
       } else if (command.name == "examineNode") {
