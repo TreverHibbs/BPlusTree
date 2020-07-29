@@ -66,6 +66,10 @@ const BPlusTreeNode = function(valuesParam = [],
       return(nodePtr[childIndex]);
     },
 
+    getChildren: function() {
+      return(nodePtr);
+    },
+
     getChildAmount: function() {
       return(nodePtr.length)
     },
@@ -80,6 +84,10 @@ const BPlusTreeNode = function(valuesParam = [],
 
     getRow: function() {
       return(row);
+    },
+
+    getSize: function() {
+      return(values.length);
     }
   };
 }
@@ -176,13 +184,23 @@ function getChild(parentNode, childIndex) {
 function determineChildPositions(parentNode) {
   const parentPosition = parentNode.getPosition();
   const childAmount = parentNode.getChildAmount();
+  const children = parentNode.getChildren();
 
   //calculate the total space that will be used for the row.
   const childSpace = NODE_SPACING * childAmount;
-  const firstChildPosition = parentPosition - childSpace/2;
+  //The far left side of a node is its horizonta position coordinate.
+  //Therefore to get the middle of the children row to line up with the
+  //middle of the parent node half the total width of 
+  //the parent node must be added to parent position value.
+  
+  //parenthesis are required arround division to force math to happen
+  //otherwise numbers will only be concatenated.
+  
+  const halfLenOfParent = parentPosition + (WIDTH_PER_ELEM/2);
+  const firstChildPosition = halfLenOfParent - (childSpace/2);
 
   //determine the placement of the children in that space
-  const childPositions = getChildPositions(childAmount, firstChildPosition);
+  const childPositions = getChildPositions(children, parentPosition);
 
   //update the datastructure with the horizontal positions of children
   updateChildPositions(parentNode, childPositions);
@@ -190,19 +208,39 @@ function determineChildPositions(parentNode) {
   return(true);
 }
 
-function getChildPositions(childAmount, currentChildPosition,
+function getChildPositions(children, parentPosition,
                            childIndex = 0,
                            childPositions = []) {
-  childPositions.push(currentChildPosition);
-
-  childIndex++;
-  currentChildPosition = currentChildPosition + NODE_SPACING;
-
-  if(childIndex == childAmount){
+  if(childIndex == children.length){
     return(childPositions);
   }
+  let currentChildPosition = parentPosition;
 
-  return(getChildPositions(childAmount,
+
+  if(children.length % 2 == 0) {
+    if(childIndex+1 <= children.length/2) {
+      currentChildPosition = parentPosition - NODE_SPACING;
+    } else {
+      currentChildPosition = parentPosition + NODE_SPACING;
+    }
+  } else {
+    if(childIndex+1 == children.length/2+0.5){
+      currentChildPosition = parentPosition;
+    } else if (childIndex+1 < children.length) {
+      currentChildPosition = parentPosition - NODE_SPACING;
+    } else {
+      currentChildPosition = parentPosition + NODE_SPACING;
+    }
+  }
+
+  childPositions.push(currentChildPosition);
+  childIndex++;
+
+  const currentChild = children[childIndex];
+
+  currentChildPosition = currentChildPosition + NODE_SPACING;
+
+  return(getChildPositions(children,
                            currentChildPosition,
                            childIndex,
                            childPositions));

@@ -46,7 +46,7 @@ var NODE_HEIGHT = 20;
 var MESSAGE_X = 5;
 var MESSAGE_Y = 10;
 
-var TOMATO_RED = "#d51b10"
+var TOMATO_RED = "#d51b10";
 var MAROON = "#a82d43";
 var LINK_COLOR = "#a82d43";
 var HIGHLIGHT_CIRCLE_COLOR = "#a82d43";
@@ -79,7 +79,7 @@ animationManager = new AnimationManager(objectManager);
  */ 
 const View = function() {
   let objectIndex = 0; 
-  let selectedPosition = [STARTING_X];
+  let selectedPosition = STARTING_X;
 
   const bPlusTree = BPlusTree();
 
@@ -153,6 +153,8 @@ const View = function() {
    */ 
   function renderHighlightNode(animationCommands, selectedNodeID) {
     highlightNode(animationCommands, selectedNodeID);
+    addStep(animationCommands);
+
     unHighlightNode(animationCommands, selectedNodeID);
     addStep(animationCommands);
 
@@ -201,13 +203,14 @@ const View = function() {
                                     objectIndex++,
                                     selectedPosition);
      const secondChild = createChild(bPlusTree.bPlusTreeRoot,
-                                     leftValues,
+                                     rightValues,
                                      secondChildIndex,
                                      objectIndex++,
                                      objectIndex++,
                                      selectedPosition);
 
      //animate visuals
+     addValues(animationCommands, selectedNode.getID(), selectedNode.getValues());
      createNode(animationCommands, getChild(selectedNode,
                                    firstChildIndex));
      createNode(animationCommands, getChild(selectedNode,

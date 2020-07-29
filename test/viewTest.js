@@ -25,10 +25,16 @@ describe('view-module', function () {
         command = { "name":"examineNode" };
         modelCommands.push(command)
 
+        command = { "name":"changeNodeValues", "values":[1, 2] };
+        modelCommands.push(command)
+
+        command = { "name":"examineNode" };
+        modelCommands.push(command)
+
         command = { "name":"changeNodeValues", "values":[1, 2, 3] };
         modelCommands.push(command)
 
-        command = { "name":"splitNode", "values":[2], "leftValues":[1], "rightValues":[3] };
+        command = { "name":"splitNode", "values":[2], "leftValues":[1], "rightValues":[2, 3] };
         modelCommands.push(command)
 
         view.animate(modelCommands);
