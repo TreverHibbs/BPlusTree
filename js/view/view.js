@@ -139,7 +139,7 @@ const View = function() {
     createNode(animationCommands,
                bPlusTree.bPlusTreeRoot);
     addStep(animationCommands);
-  
+ 
     return(animationCommands);
   }
 
@@ -192,6 +192,8 @@ const View = function() {
      const firstChildIndex = 0;
      const secondChildIndex = 1;
      const selectedNode = bPlusTree.bPlusTreeRoot;
+     const selectedPosition = selectedNode.getPosition();
+     const childRow = selectedNode.getRow() + 1;
 
 
      //update B-plus-tree datastructure
@@ -200,29 +202,27 @@ const View = function() {
                                     leftValues,
                                     firstChildIndex,
                                     objectIndex++,
-                                    selectedPosition);
+                                    selectedPosition,
+                                    childRow);
      const secondChild = createChild(bPlusTree.bPlusTreeRoot,
                                      rightValues,
                                      secondChildIndex,
                                      objectIndex++,
-                                     selectedPosition);
+                                     selectedPosition,
+                                     childRow);
 
 
      //animate visuals
      addValues(animationCommands, selectedNode.getID(), selectedNode.getValues());
-     createNode(animationCommands, getChild(selectedNode,
-                                   firstChildIndex));
-     createNode(animationCommands, getChild(selectedNode,
-                                    secondChildIndex));
+     createChildNode(animationCommands,
+                     getChild(selectedNode, firstChildIndex),
+                     selectedNode,
+                     selectedNode);
+     createChildNode(animationCommands,
+                     getChild(selectedNode, secondChildIndex),
+                     selectedNode,
+                     selectedNode);
 
-     connectNodes(animationCommands, selectedNode, firstChild, firstChildIndex);
-     connectNodes(animationCommands, selectedNode, secondChild, secondChildIndex);
-
-
-     determineChildPositions(selectedNode);
-
-     moveNode(animationCommands, firstChild);
-     moveNode(animationCommands, secondChild);
 
      addStep(animationCommands);
 

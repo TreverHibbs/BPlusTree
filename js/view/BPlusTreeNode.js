@@ -323,3 +323,12 @@ function updateChildPositions(parentNode, childPositions, childIndex = 0) {
   return(parentNode);
 }
 
+
+/**
+ *  @desc: a function for determening nodes verticle coordinate
+ *  @param: int $nodeRow - The row number of the node
+ *  @return: int - the verticle coordinate of the row
+ */ 
+function getVerticlePosition(nodeRow) {
+  return(nodeRow * STARTING_Y);
+}

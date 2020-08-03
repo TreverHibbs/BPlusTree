@@ -135,18 +135,21 @@ describe('view-module', function () {
                                      parentPosition,
                                      secondRow); 
         const childThree = createChild(myBTreeNode,
-                                       [4],
+                                       [4, 5],
                                        1,
                                        objectID++,
                                        parentPosition,
                                        secondRow); 
+        const childFour = createChild(myBTreeNode,
+                                      [8],
+                                      3,
+                                      objectID++,
+                                      parentPosition,
+                                      secondRow); 
         console.log("child two position is" + " " + childTwo.getPosition());
         console.log("child three position is" + " " + childThree.getPosition());
         console.log("child one position is" + " " + childOne.getPosition());
-
-         
-
-        assert.equal(childOne.getPosition(), -40);
+        console.log("child four position is" + " " + childFour.getPosition());
       });
     });
 

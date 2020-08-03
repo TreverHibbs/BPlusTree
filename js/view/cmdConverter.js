@@ -63,6 +63,57 @@ function createNode(commands, bPlusTreeNode) {
   return(commands);
 }
 
+/**
+ *  @desc creates a list of commands for the creation a BTree child node.
+ *  @param Array $commands - an Array of animation libaray commands.
+ *         BPlusTreeNode $childNode - the child node to be created
+ *         BPlusTreeNode $originNode - the node from which the child node
+ *                                     has broken off from.
+ *  @return Array - the updated list of generated commands
+ */ 
+function createChildNode(commands, childNode, parentNode, originNode = null) {
+  const childNodeID = childNode.getID();
+  const childNodeValues = childNode.getValues();
+  const childVerticlePosition = determineNodeHeight(childNode.getRow());
+
+  let childOriginPosition = 0;
+
+  //if origin position is specified then node will be created at that
+  //position and then moved to its final position.
+  if(originNode != null) {
+    childOriginPosition = originNode.getPosition();
+  } else {
+    childOriginPosition = childNode.getPosition();  
+  }
+
+  command = createCommand("CreateBTreeNode",
+                          childNodeID,
+                          WIDTH_PER_ELEM,
+                          NODE_HEIGHT,
+                          childNodeValues.length,
+                          childOriginPosition,
+                          childVerticlePosition,
+                          BACKGROUND_COLOR,
+                          FOREGROUND_COLOR);
+  commands.push(command);
+
+
+  genSetTextCmd(commands, childNodeID, childNodeValues);
+
+
+  //connect with parent node
+  connectNodes(commands, parentNode, childNode);
+
+
+  //move node if origin Node specified
+  if(originNode != null) {
+    moveNode(commands, childNode); 
+  }
+
+
+  return(commands);
+}
+
 
 /**
  *  @desc animate an edge connection between two animated node objects
@@ -81,7 +132,6 @@ function connectNodes(commands, selectedNode, selectedNodeChild, anchorPoint = 0
                               anchorPoint);
   commands.push(command);
 
-  console.log(commands);
   return(commands);
 }
 
