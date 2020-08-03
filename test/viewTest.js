@@ -92,7 +92,7 @@ describe('view-module', function () {
       });
     });
 
-    describe('create new BPlusTree for node testing', function() {
+    describe.skip('create new BPlusTree for node testing', function() { 
       xit('Should create new BPlusTree and log its root nodes to string', function() {
         bPlusTree = BPlusTree();
         console.log(bPlusTree.bPlusTreeRoot);
@@ -101,7 +101,56 @@ describe('view-module', function () {
       });
     });
 
-    describe('test getters and setters of BPlusTreeNode', function() {
+    describe('test positioning functions', function() { 
+      let objectID = 0;
+      let childIndex = 0;
+
+
+      const myBTreeNode = BPlusTreeNode([2], objectID++, 0);
+      const secondRow = myBTreeNode.getRow() + 1;
+      const parentPosition = myBTreeNode.getPosition();
+
+
+      xit('Should add single node poitioned correctly', function() {
+        const childOne = createChild(myBTreeNode,
+                                     [1],
+                                     childIndex++,
+                                     objectID++,
+                                     parentPosition,
+                                     secondRow); 
+        assert.equal(childOne.getPosition(), 0);
+      });
+
+      it('Should add two children positioned correctly', function() {
+        const childOne = createChild(myBTreeNode,
+                                     [1],
+                                     childIndex++,
+                                     objectID++,
+                                     parentPosition,
+                                     secondRow); 
+        const childTwo = createChild(myBTreeNode,
+                                     [3, 4],
+                                     childIndex++,
+                                     objectID++,
+                                     parentPosition,
+                                     secondRow); 
+        const childThree = createChild(myBTreeNode,
+                                       [4],
+                                       1,
+                                       objectID++,
+                                       parentPosition,
+                                       secondRow); 
+        console.log("child two position is" + " " + childTwo.getPosition());
+        console.log("child three position is" + " " + childThree.getPosition());
+        console.log("child one position is" + " " + childOne.getPosition());
+
+         
+
+        assert.equal(childOne.getPosition(), -40);
+      });
+    });
+
+    describe.skip('test getters and setters of BPlusTreeNode', function() {
       it('Should set and get the id of a node', function() {
         const myBTreeNode = BPlusTreeNode([1], 0);
         console.log(myBTreeNode.getID());
@@ -145,7 +194,7 @@ describe('view-module', function () {
         assert.equal(2, childNum);
       });
 
-      it('Should determine the postion of children nodes in a row', function() {
+      xit('Should determine the postion of children nodes in a row', function() {
         const childrenAmount = 2;
         const firstChildPosition = 0;
 
@@ -155,7 +204,7 @@ describe('view-module', function () {
         assert.deepEqual(childrenPositions, [0, NODE_SPACING]);
       });
 
-      it('Should update the position of children', function() {
+      xit('Should update the position of children', function() {
         const testPosition = [0, 0];
         const firstChildIndex = 0;
         const secondChildIndex = 1;
@@ -192,7 +241,7 @@ describe('view-module', function () {
       const secondChildIndex = 1;
       const firstValues = [1];
       const secondValues = [3];
-      const selectedNode = BPlusTreeNode([1, 2, 3], objectIndex++);
+      const selectedNode = BPlusTreeNode([1, 2, 3], objectIndex++, STARTING_X);
       it('Should create a parent node and give it two children', function() {
 
 

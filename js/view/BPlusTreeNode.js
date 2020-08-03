@@ -32,9 +32,9 @@ const BPlusTreeNode = function(valuesParam = [],
   return {
     values, 
 
-    addChild: function(node, edge, childIndex) {
-      nodePtr[childIndex] = node;
-      edgePtr[childIndex] = edge;
+    addChild: function(node, childIndex) {
+      nodePtr.splice(childIndex, 0, node);
+      return;
     },
 
     setValues: function(newValues) {
@@ -157,16 +157,12 @@ function createChild(parentNode,
                      values,
                      childIndex,
                      nodeID,
-                     edgeID,
                      position,
                      row) {
   const newChildRow = parentNode.getRow() + 1;
+  const newChild = BPlusTreeNode(values, nodeID, position, newChildRow);
 
-
-  newChild = BPlusTreeNode(values, nodeID, position, newChildRow);
-
-  newEdge = makeBPlusTreeEdge(parentNode, newChild, edgeID);
-  parentNode.addChild(newChild, newEdge, childIndex);
+  addChild(parentNode, newChild, childIndex);
 
   return(newChild);
 }
@@ -177,73 +173,141 @@ function getChild(parentNode, childIndex) {
 
 
 /**
+ *  @desc Determine the new positions of child nodes with insert.
+ *  @param BPlusTreeNode $parentNode - selected node
+ *         BPlusTreeNode $childNode - child node to add
+ */ 
+function addChild(parentNode, childNode, childIndex) {
+  const children = parentNode.getChildren();
+
+
+  parentNode.addChild(childNode, childIndex);
+  determineChildPosition(childNode, childIndex, children);
+
+  
+  return(true);
+}
+
+
+/**
  *  @desc determine the correct position of the child relative to the parent
  *  @param BPlusTreeNode $parentNode - the selected node
  *  @return Array - the updated list of generated commands
  */ 
-function determineChildPositions(parentNode) {
-  const parentPosition = parentNode.getPosition();
-  const childAmount = parentNode.getChildAmount();
-  const children = parentNode.getChildren();
+function determineChildPosition(childNode, childIndex, children) {
+  const leftChild = children[childIndex-1];
+  const rightChild = children[childIndex+1];
+  const insertChild = childNode;
 
-  //calculate the total space that will be used for the row.
-  const childSpace = NODE_SPACING * childAmount;
-  //The far left side of a node is its horizonta position coordinate.
-  //Therefore to get the middle of the children row to line up with the
-  //middle of the parent node half the total width of 
-  //the parent node must be added to parent position value.
+  const halfNodeLen = WIDTH_PER_ELEM/2;
+  const fullNodeLen = WIDTH_PER_ELEM;
+
+  //for each additional value in the inserted node add half a node length
+  //to the right and left nodes ajust value.
+  const leftAdditionalLen = (insertChild.getSize() - 1) * halfNodeLen;
+  const rightAdditionalLen = (insertChild.getSize() - 1) * halfNodeLen;
   
-  //parenthesis are required arround division to force math to happen
-  //otherwise numbers will only be concatenated.
-  
-  const halfLenOfParent = parentPosition + (WIDTH_PER_ELEM/2);
-  const firstChildPosition = halfLenOfParent - (childSpace/2);
+  const leftAdjustLen = halfNodeLen + leftAdditionalLen;
+  const rightAdjustLen = halfNodeLen + rightAdditionalLen;
+  const insertAdjustLen = halfNodeLen;
 
-  //determine the placement of the children in that space
-  const childPositions = getChildPositions(children, parentPosition);
 
-  //update the datastructure with the horizontal positions of children
-  updateChildPositions(parentNode, childPositions);
+  //shift all nodes left of inserting node to the left by adjustLen
+  //shift all nodes right of inserting node to the right by adjustLen
+  //place the inserting node right of the left node or left of right node
+  if(leftChild){
+    insertChild.setPosition(leftChild.getPosition() + (insertAdjustLen));
+  } else if(rightChild) {
+    insertChild.setPosition(rightChild.getPosition() - (insertAdjustLen));
+  }
+  changeNodePositions(children.slice(0, childIndex), -leftAdjustLen);
+  changeNodePositions(children.slice(childIndex+1), rightAdjustLen);
+
 
   return(true);
 }
 
-function getChildPositions(children, parentPosition,
-                           childIndex = 0,
-                           childPositions = []) {
+/**
+ *  @desc shift node positions by the specified space
+ *  @param Array $children - the selected nodes
+ *  @return Array - the update children nodes
+ */ 
+function changeNodePositions(children, adjustLen, childIndex = 0) {
+  //exit condition
+  if(childIndex == children.length) {
+    return(children);
+  }
+
+
+  const currentChild = children[childIndex++];
+  const childPosition = currentChild.getPosition();
+
+
+  currentChild.setPosition(childPosition + adjustLen);
+
+
+  changeNodePositions(children, adjustLen, childIndex);
+  return(children);
+}
+
+
+function getChildPositions(children, parentPosition, childIndex = 0) {
+  calulateChildPosition(children[childIndex], parentPosition);
+  adjustChildPositions(children, childPositions );
+}
+
+function calculateChildPositions(children, parentPosition, 
+                                 childIndex = 0,
+                                 childPositions = []) {
   if(childIndex == children.length){
     return(childPositions);
   }
+
+
+  const childRowPosition = childIndex + 1;
+
   let currentChildPosition = parentPosition;
 
 
-  if(children.length % 2 == 0) {
-    if(childIndex+1 <= children.length/2) {
-      currentChildPosition = parentPosition - NODE_SPACING;
-    } else {
-      currentChildPosition = parentPosition + NODE_SPACING;
-    }
+  //get child position if all nodes were one node
+  if(childRowPosition == children.length/2+0.5){
+    currentChildPosition = parentPosition;
+  } else if(childRowPosition <= children.length/2) {
+    currentChildPosition = parentPosition - NODE_SPACING * childRowPosition;
   } else {
-    if(childIndex+1 == children.length/2+0.5){
-      currentChildPosition = parentPosition;
-    } else if (childIndex+1 < children.length) {
-      currentChildPosition = parentPosition - NODE_SPACING;
-    } else {
-      currentChildPosition = parentPosition + NODE_SPACING;
-    }
+    currentChildPosition = parentPosition + NODE_SPACING * (childRowPosition - (children.length/2));
   }
+
 
   childPositions.push(currentChildPosition);
   childIndex++;
 
-  const currentChild = children[childIndex];
+  return(determineChildPositions(children,
+                                 parentPosition,
+                                 childIndex,
+                                 childPositions));
+}
 
-  currentChildPosition = currentChildPosition + NODE_SPACING;
+function changePositions(centerNodeIndex, childPositions, childSize, childIndex = 0) {
+  if(childIndex == children.length){
+    return(childPositions);
+  }
 
-  return(getChildPositions(children,
-                           currentChildPosition,
-                           childIndex,
-                           childPositions));
+  //adjust length is the length of half the length of the center node minus
+  //one node length.
+  const adjustLength = (WIDTH_PER_ELEM/2)*(childSize-1);
+
+
+  if(childIndex < centerNodeIndex) {
+    childPositions[childIndex] = childPositions[childIndex] - adjustLength;
+  } else if (childIndex > centerNodeIndex) {
+    childPositions[childIndex] = childPositions[childIndex] + adjustLength;
+  }
+}
+
+//helper function for determining children positions
+function isCenterNode(childRowPosition, childrenAmount) {
+  return(childRowPosition == ((childrenAmount/2)+0.5));
 }
 
 //to do create system for updating data structure with child position values.

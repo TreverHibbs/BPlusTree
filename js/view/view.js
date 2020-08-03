@@ -200,14 +200,13 @@ const View = function() {
                                     leftValues,
                                     firstChildIndex,
                                     objectIndex++,
-                                    objectIndex++,
                                     selectedPosition);
      const secondChild = createChild(bPlusTree.bPlusTreeRoot,
                                      rightValues,
                                      secondChildIndex,
                                      objectIndex++,
-                                     objectIndex++,
                                      selectedPosition);
+
 
      //animate visuals
      addValues(animationCommands, selectedNode.getID(), selectedNode.getValues());
