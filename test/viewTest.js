@@ -4,6 +4,52 @@ var assert = chai.assert;
 
 
 describe('view-module', function () {
+  describe('cmdConverter.js', function() {
+    describe.skip('create two sibling nodes', function() {
+      animationManager = new AnimationManager(objectManager);
+
+      const commands = [];
+      const leftChildNode = BPlusTreeNode([1], 0, STARTING_X, 0);
+      const rightChildNode = BPlusTreeNode([1], 1, STARTING_X+100, 0);
+
+      const leftChildValues = leftChildNode.getValues();
+      const rightChildValues = rightChildNode.getValues();
+
+      const view = View();
+
+      it('should result in two sibling nodes begin animated', function() {
+        let command = createCommand("CreateBTreeNode",
+                                    leftChildNode.getID(),
+                                    WIDTH_PER_ELEM,
+                                    NODE_HEIGHT,
+                                    leftChildValues.length,
+                                    leftChildNode.getPosition(),
+                                    determineNodeHeight(leftChildNode.getRow()),
+                                    BACKGROUND_COLOR,
+                                    FOREGROUND_COLOR);
+        commands.push(command);
+
+        command = createCommand("CreateBTreeNode",
+                                rightChildNode.getID(),
+                                WIDTH_PER_ELEM,
+                                NODE_HEIGHT,
+                                rightChildValues.length,
+                                rightChildNode.getPosition(),
+                                determineNodeHeight(rightChildNode.getRow()),
+                                BACKGROUND_COLOR,
+                                FOREGROUND_COLOR);
+        commands.push(command);
+
+        connectSiblingNodes(commands, leftChildNode, rightChildNode);
+        addStep(commands);
+
+
+        animationManager.StartNewAnimation(commands);
+      });
+    });
+  });
+
+
   describe('view.js', function() {
     //before(function () {
     //  ctx.clearRect(0, 0, 900, 600);

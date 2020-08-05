@@ -202,14 +202,16 @@ function determineChildPosition(childNode, childIndex, children) {
   const halfNodeLen = WIDTH_PER_ELEM/2;
   const fullNodeLen = WIDTH_PER_ELEM;
 
+  const halfNodeSpacing = NODE_SPACING/2;
+
   //for each additional value in the inserted node add half a node length
   //to the right and left nodes ajust value.
   const leftAdditionalLen = (insertChild.getSize() - 1) * halfNodeLen;
   const rightAdditionalLen = (insertChild.getSize() - 1) * halfNodeLen;
   
-  const leftAdjustLen = halfNodeLen + leftAdditionalLen;
-  const rightAdjustLen = halfNodeLen + rightAdditionalLen;
-  const insertAdjustLen = halfNodeLen;
+  const leftAdjustLen = halfNodeLen + leftAdditionalLen + halfNodeSpacing;
+  const rightAdjustLen = halfNodeLen + rightAdditionalLen + halfNodeSpacing;
+  const insertAdjustLen = halfNodeLen + halfNodeSpacing;
 
 
   //shift all nodes left of inserting node to the left by adjustLen

@@ -3,6 +3,7 @@
  * the mvc design pattern specifications.
  * @author Trever Hibbs treverhibbs@gmail.com
 */
+//verticle position aswell as horizontal position.
 
 
 
@@ -38,7 +39,7 @@ var MIN_MAX_DEGREE = 3;
 var MAX_MAX_DEGREE = 7;
 
 var HEIGHT_DELTA  = 50;
-var NODE_SPACING = 50; 
+const NODE_SPACING = 15; 
 const NODE_VERTICAL_SPACING = 60;
 var WIDTH_PER_ELEM = 40;
 var NODE_HEIGHT = 20;
@@ -222,6 +223,8 @@ const View = function() {
                      getChild(selectedNode, secondChildIndex),
                      selectedNode,
                      selectedNode);
+
+     connectSiblingNodes(animationCommands, firstChild, secondChild);
 
 
      addStep(animationCommands);

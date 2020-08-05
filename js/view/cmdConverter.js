@@ -74,17 +74,26 @@ function createNode(commands, bPlusTreeNode) {
 function createChildNode(commands, childNode, parentNode, originNode = null) {
   const childNodeID = childNode.getID();
   const childNodeValues = childNode.getValues();
-  const childVerticlePosition = determineNodeHeight(childNode.getRow());
+  const childIndex = getChildIndex(childNode, parentNode);
+  const anchorPoint = childIndex;
 
+  const leftSiblingNode = parentNode.getChild(childIndex-1);
+  const rightSiblingNode = parentNode.getChild(childIndex+1);
+
+  let childVerticlePosition = 0; 
   let childOriginPosition = 0;
+
 
   //if origin position is specified then node will be created at that
   //position and then moved to its final position.
   if(originNode != null) {
+    childVerticlePosition = determineNodeHeight(originNode.getRow());
     childOriginPosition = originNode.getPosition();
   } else {
+    childVerticlePosition = determineNodeHeight(childNode.getRow());
     childOriginPosition = childNode.getPosition();  
   }
+
 
   command = createCommand("CreateBTreeNode",
                           childNodeID,
@@ -102,7 +111,15 @@ function createChildNode(commands, childNode, parentNode, originNode = null) {
 
 
   //connect with parent node
-  connectNodes(commands, parentNode, childNode);
+  connectNodes(commands, parentNode, childNode, anchorPoint);
+  //connect with sibling nodes if exists
+  //if(leftSiblingNode) {
+  //  connectSiblingNodes(commands, leftSiblingNode, childNode);
+  //}
+
+  //if(rightSiblingNode) {
+  //  connectSiblingNodes(commands, childNode, rightSiblingNode);
+  //}
 
 
   //move node if origin Node specified
@@ -130,6 +147,28 @@ function connectNodes(commands, selectedNode, selectedNodeChild, anchorPoint = 0
                               0,
                               "",
                               anchorPoint);
+  commands.push(command);
+
+  return(commands);
+}
+
+
+/**
+ *  @desc animate edge connection between sibling nodes
+ *  @param Array $commands - list of animation commands to execute next
+ *         BPlusTreeNode $leftSiblingNode - the left sibling node
+ *         BPlusTreeNode $rightSiblingNode - the right sibling node
+ *  @return Array - the updated list of generated commands
+ */ 
+function connectSiblingNodes(commands, leftSiblingNode, rightSiblingNode) {
+  let command = createCommand("Connect",
+                              leftSiblingNode.getID(),
+                              rightSiblingNode.getID(),
+                              LINK_COLOR,
+                              0,
+                              1,
+                              "",
+                              1);
   commands.push(command);
 
   return(commands);
@@ -269,3 +308,23 @@ function determineNodeHeight(nodeRow) {
   return(STARTING_Y + nodeRow * NODE_VERTICAL_SPACING);
 }
 
+/**
+ *  @desc: returns true if child is left of parent node position wise.
+ *  @param: BPlusTreeNode $childNode - the child node
+ *          BPlusTreeNode $parentNode - the parent node
+ *  @return: boolean - true if left of parent false if not
+ */ 
+function getChildIndex(childNode, parentNode, childIndex = 0) {
+  const children = parentNode.getChildren();
+
+
+  if (childIndex === children.length) {
+    console.log("unable to determine child index");
+    return(0);
+  } else if(children[childIndex] === childNode) {
+    return(childIndex);
+  }
+
+  childIndex++;
+  return(getChildIndex(childNode, parentNode, childIndex));
+}
