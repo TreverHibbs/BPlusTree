@@ -1,6 +1,6 @@
 /**
  * @desc This file holds functions for the convertion of a model command
- * into animation commands.
+ *       into animation commands.
  * @author Trever Hibbs treverhibbs@gmail.com
 */
 
@@ -9,28 +9,25 @@
  * CONTENTS
  *
  * COVERSION-FUNCTIONS 
- *   creatRoot()
+ *   creatNode()
+ *   createChildNode()
+ *   connectNodes()
+ *   connectSiblingNodes()
  *   highlightNode()
- *   addToNode()
+ *   unHighlightNode()
+ *   highlightEdge()
+ *   unHighlightEdge()
+ *   addValues()
+ *   addStep()
+ *   moveNode()
  *
  * HELPER-FUNCTIONS
+ *   createCommand()
+ *   genSetTextCmd()
+ *   determineNodeHeight()
+ *   getChildIndex()
  *
  */
-
-
-
-
-
-/*------------------------------------*\
-  #VARIABLES
-\*------------------------------------*/
-
-/**
- *  @desc creates a list of commands for the creation a BTree root.
- *  @param Array $commands - an Array of animation libaray commands.
- *         int $value - the value of the root node,
- *  @return Array - the updated list of generated commands
- */ 
 
 
 
@@ -43,7 +40,7 @@
 /**
  *  @desc creates a list of commands for the creation a BTree root.
  *  @param Array $commands - an Array of animation libaray commands.
- *         int $value - the value of the root node,
+ *         BPlusTreeNode $bPlusTreeNode - the node to render
  *  @return Array - the updated list of generated commands
  */ 
 function createNode(commands, bPlusTreeNode) {
@@ -67,8 +64,9 @@ function createNode(commands, bPlusTreeNode) {
  *  @desc creates a list of commands for the creation a BTree child node.
  *  @param Array $commands - an Array of animation libaray commands.
  *         BPlusTreeNode $childNode - the child node to be created
- *         BPlusTreeNode $originNode - the node from which the child node
- *                                     has broken off from.
+ *         BPlusTreeNode $parentNode - the parent of the child node
+ *         BPlusTreeNode $originNode - the node from which the new child node
+ *                                     has split from
  *  @return Array - the updated list of generated commands
  */ 
 function createChildNode(commands, childNode, parentNode, originNode = null) {
@@ -112,14 +110,6 @@ function createChildNode(commands, childNode, parentNode, originNode = null) {
 
   //connect with parent node
   connectNodes(commands, parentNode, childNode, anchorPoint);
-  //connect with sibling nodes if exists
-  //if(leftSiblingNode) {
-  //  connectSiblingNodes(commands, leftSiblingNode, childNode);
-  //}
-
-  //if(rightSiblingNode) {
-  //  connectSiblingNodes(commands, childNode, rightSiblingNode);
-  //}
 
 
   //move node if origin Node specified
@@ -205,11 +195,36 @@ function unHighlightNode(commands, nodeID) {
 
 
 /**
+ *  @desc highlight a edge
+ *  @param Array $commands - an Array of animation libaray commands.
+ *         int $fromNodeID - the id the the node which the edge starts at
+ *         int $toNodeID - the id of the node where the edge ends at
+ *  @return Array - the updated list of generated commands
+ */ 
+function highlightEdge(commands, fromNodeID, toNodeID) {
+  command = createCommand("SetEdgeHighlight", fromNodeID, toNodeID, HIGHLIGHT_VAL);
+  commands.push(command);
+
+  return(commands);
+}
+
+//see above function comment block
+function unHighlightEdge(commands, fromNodeID, toNodeID) {
+  const unHighlightValue = 0;
+
+
+  command = createCommand("SetEdgeHighlight", fromNodeID, toNodeID, unHighlightValue);
+  commands.push(command);
+
+  return(commands);
+}
+
+
+/**
  *  @desc adds a value to a existing node.
  *  @param Array $commands - an Array of animation libaray commands.
- *         int $value - the value to add to existing node,
  *         int $nodeID - ID of the node to add value to
- *         int $valueIndex - where in the node to place the value
+ *         Array $values - the array of values to set for the node
  *  @return Array $commands - The modified array of commands
  */ 
 function addValues(commands, nodeID, values) {
@@ -234,8 +249,9 @@ function addStep(commands) {
 
 
 /**
- *  @desc adds a step command to animation command queue
+ *  @desc smoothly moves a node to its current position and height
  *  @param Array $commands - an Array of animation libaray commands.
+ *         BPlusTreeNode $node - the node to be moved to its current position
  *  @return Array $commands - The modified array of commands
  */ 
 function moveNode(commands, node) {
@@ -302,7 +318,7 @@ function genSetTextCmd(commands, nodeID, values,
 /**
  *  @desc convert the row of a node to it's height
  *  @param BPlusTreeNode $nodeRow - the node to have it's height determined.
- *  @return int expression - the x coordinate of the node
+ *  @return int expression - the y coordinate of the node
  */ 
 function determineNodeHeight(nodeRow) {
   return(STARTING_Y + nodeRow * NODE_VERTICAL_SPACING);

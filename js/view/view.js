@@ -1,9 +1,8 @@
 /**
- * @desc This file will hold functions for interfacing with the model per 
- * the mvc design pattern specifications.
+ * @desc - This file contains functions for interfacing with the model per 
+ *         the mvc design pattern specifications.
  * @author Trever Hibbs treverhibbs@gmail.com
 */
-//verticle position aswell as horizontal position.
 
 
 
@@ -15,8 +14,20 @@
  * CONSTANTS
  *
  * MAIN-VIEW-FACTORY-FUNC
- *   RENDER-FUNCTIONS
  *   view()
+ *   VIEW-METHODS
+ *     animate()
+ *
+ *   RENDER-FUNCTIONS
+ *     renderAddValue()
+ *     renderCreateNode()
+ *     renderCreateRoot() - deprecated
+ *     renderHighlightNode()
+ *     renderChangeNodeValues()
+ *     renderSplitNode()
+ *     renderSelectChild()
+ *
+ * MODEL-COMMANDS-DESCRIPTION
  *
  */
 
@@ -81,6 +92,7 @@ animationManager = new AnimationManager(objectManager);
 const View = function() {
   let objectIndex = 0; 
   let selectedPosition = STARTING_X;
+  let selectedNode = null;
 
   const bPlusTree = BPlusTree();
 
@@ -128,6 +140,8 @@ const View = function() {
    *  @desc renders the animation of inserting a root node
    *  @param int $value - the value of the root node,
    *  @return Array - the updated list of generated commands
+   *  
+   *  DEPRECATED
    */ 
   function renderCreateRoot(animationCommands, value) { 
     if (bPlusTree.BPlusTreeRoot == null) {
@@ -233,9 +247,33 @@ const View = function() {
      return(animationCommands);
    }
 
+   /**
+   *  @desc animate the highlighting of a edge
+   *  @param Array $animationCommands - an array of the generated animation
+   *                                    commands
+   *         Int $command.childIndex - The index of the child to select
+   *  @return Array - the updated list of generated commands
+   */ 
+   function renderSelectChild(animationCommands, childIndex) {
+     selectedNode = bPlusTree.bPlusTreeRoot.getChild(childIndex);
+     const selectedNodeID = selectedNode.getID();
+     const previousNodeID = bPlusTree.bPlusTreeRoot.getID();
+
+
+     highlightEdge(animationCommands, previousNodeID, selectedNodeID);
+     addStep(animationCommands);
+
+     unHighlightEdge(animationCommands, previousNodeID, selectedNodeID);
+     addStep(animationCommands);
+
+     renderHighlightNode(animationCommands, selectedNodeID);
+
+     return(animationCommands);
+   }
+
 
   /*------------------------------------*\
-    #RETURN-View-OBJECT
+    #VIEW-METHODS
   \*------------------------------------*/
   return {
     objectIndex, bPlusTree,
@@ -284,6 +322,9 @@ const View = function() {
                         command.values,
                         command.leftValues,
                         command.rightValues);
+      } else if (command.name == "selectChild") {
+        renderSelectChild(animationCommands,
+                        command.childIndex);
       } else {
         return(false);
       }

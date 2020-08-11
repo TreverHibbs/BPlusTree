@@ -1,4 +1,37 @@
 /**
+ * @desc - this file contains the main BPlusTree and BPlusTreeNode data
+ *         structures. It also contains functions to manipulate these data
+ *         structures.
+ * @author - Trever Hibbs treverhibbs@gmail.com
+*/
+
+
+/*
+ * CONTENTS
+ *
+ * DATA-STRUCTURES
+ *   BPlusTree
+ *   BPlusTreeNode
+ *
+ * BPLUSTREE-MANIPULATION-FUNCTIONS
+ *   createChild()
+ *   getChild()
+ *   addChild()
+ *   determineChildPosition()
+ *   changeNodePositions()
+ *   changePositions()
+ *
+ */
+
+
+
+
+
+/*------------------------------------*\
+  #DATA-STRUCTURES
+\*------------------------------------*/
+
+/**
  *  @desc - a factory function for creating a B+ tree object
  *  @return Object - a object representing a B+ tree
  */ 
@@ -14,7 +47,7 @@ const BPlusTree = function() {
 
 /**
  *  @desc - a factory function for creating a B+ tree node
- *  @return Object - a object representing a B+ tree
+ *  @return BPlusTreeNode - a datastructure representing a BPlusTreeNode
  */ 
 const BPlusTreeNode = function(valuesParam = [],
                                NodeID,
@@ -32,6 +65,8 @@ const BPlusTreeNode = function(valuesParam = [],
   return {
     values, 
 
+    //function will place node at childIndex and shift other nodes in array
+    //if a node already existed at the specified index.
     addChild: function(node, childIndex) {
       nodePtr.splice(childIndex, 0, node);
       return;
@@ -92,66 +127,25 @@ const BPlusTreeNode = function(valuesParam = [],
   };
 }
 
-/**
- *  @desc - a factory function for creating a B+ tree edge
- *  @return Object - a object representing a edge
- */ 
-const makeBPlusTreeEdge = function(parentNodeParam, childNodeParam, edgeID) {
-  const parentNode = parentNodeParam;
-  const childNode = childNodeParam;
-  const id = edgeID;
-
-  return {
-    setParentNode: function(node) {
-      return(true);
-    },
-
-    setChildNode: function(node) {
-      return(true);
-    },
-
-    getParentNode: function() {
-      return(parentNode);
-    },
-
-    getChildNode: function() {
-      return(childNode);
-    }
-  };
-}
-
-
-/**
- *  @desc - a factory function for creating a B+ tree leaf
- *  @return Object - a object representing a B+ tree
- */ 
-const BPlusTreeLeaf = function() {
-  const value = [];
-  const prevLeaf = null;
-  const nextLeaf = null;
-
-
-  return {
-    value, prevLeaf, nextLeaf
-  };
-}
 
 
 
 
+/*------------------------------------*\
+  #BPLUSTREE-MANIPULATION-FUNCTIONS
+\*------------------------------------*/
 
-/********************************\
- #BPLUSTREE_MANIPULATION_FUNC
-\********************************/
 /**
  *  @desc create new node and add it as a child to selected node
  *  @param BPlusTreeNode $parentNode - the selected node
- *         Array $values - vlues of the new child node
- *         ind $childIndex - the position of the new child in relative to 
+ *         Array $values - values of the new child node
+ *         ind $childIndex - the position of the new child relative to 
  *                           parent nodes other children
- *         int $the - id to be assigned to the new child node
- *         int $edgeID - the ID to be assigned to the new edge
- *  @return Array - the updated list of generated commands
+ *         int $nodeID - id to be assigned to the new child node
+ *         int $position - the horizontal coordinate to be assigned
+ *                         to new child node
+ *         int $row - the row index of the new child node
+ *  @return BPlusTreeNode - the new child node object
  */ 
 function createChild(parentNode,
                      values,
@@ -167,15 +161,23 @@ function createChild(parentNode,
   return(newChild);
 }
 
+/**
+ *  @desc return the specified child node of the parent node
+ *  @param BPlusTreeNode $parentNode - selected node
+ *         int $childIndex - the index of the child to return
+ */ 
 function getChild(parentNode, childIndex) {
   return(parentNode.getChild(childIndex));
 }
 
 
 /**
- *  @desc Determine the new positions of child nodes with insert.
+ *  @desc insert the child node into the parent nodes child node array
+ *        then call a function to set the horizontal positions of 
+ *        parent nodes children after insert
  *  @param BPlusTreeNode $parentNode - selected node
  *         BPlusTreeNode $childNode - child node to add
+ *         int $childIndex - the index to insert the new child at
  */ 
 function addChild(parentNode, childNode, childIndex) {
   const children = parentNode.getChildren();
@@ -190,9 +192,11 @@ function addChild(parentNode, childNode, childIndex) {
 
 
 /**
- *  @desc determine the correct position of the child relative to the parent
- *  @param BPlusTreeNode $parentNode - the selected node
- *  @return Array - the updated list of generated commands
+ *  @desc determine the correct position of the children relative to the parent
+ *  @param BPlusTreeNode $childNode - the most recently inserted child node
+ *         int $childIndex - the index of the most recently inserted child node
+ *         Array $children - the array of children node object of the parent
+ *  @return boolean - true
  */ 
 function determineChildPosition(childNode, childIndex, children) {
   const leftChild = children[childIndex-1];
@@ -205,12 +209,12 @@ function determineChildPosition(childNode, childIndex, children) {
   const halfNodeSpacing = NODE_SPACING/2;
 
   //for each additional value in the inserted node add half a node length
-  //to the right and left nodes ajust value.
-  const leftAdditionalLen = (insertChild.getSize() - 1) * halfNodeLen;
-  const rightAdditionalLen = (insertChild.getSize() - 1) * halfNodeLen;
+  //to the right and left nodes positional value
+  //this will cause the nodes arround the inserted node to shift left and right
+  //depending on what side the inserted node they are on.
+  const additionalLen = (insertChild.getSize() - 1) * halfNodeLen;
   
-  const leftAdjustLen = halfNodeLen + leftAdditionalLen + halfNodeSpacing;
-  const rightAdjustLen = halfNodeLen + rightAdditionalLen + halfNodeSpacing;
+  const adjustLen = halfNodeLen + additionalLen + halfNodeSpacing;
   const insertAdjustLen = halfNodeLen + halfNodeSpacing;
 
 
@@ -222,17 +226,17 @@ function determineChildPosition(childNode, childIndex, children) {
   } else if(rightChild) {
     insertChild.setPosition(rightChild.getPosition() - (insertAdjustLen));
   }
-  changeNodePositions(children.slice(0, childIndex), -leftAdjustLen);
-  changeNodePositions(children.slice(childIndex+1), rightAdjustLen);
+  changeNodePositions(children.slice(0, childIndex), -adjustLen);
+  changeNodePositions(children.slice(childIndex+1), adjustLen);
 
 
   return(true);
 }
 
 /**
- *  @desc shift node positions by the specified space
+ *  @desc shift node positions by the specified adjust length
  *  @param Array $children - the selected nodes
- *  @return Array - the update children nodes
+ *  @return Array - the updated children nodes array
  */ 
 function changeNodePositions(children, adjustLen, childIndex = 0) {
   //exit condition
@@ -253,43 +257,6 @@ function changeNodePositions(children, adjustLen, childIndex = 0) {
 }
 
 
-function getChildPositions(children, parentPosition, childIndex = 0) {
-  calulateChildPosition(children[childIndex], parentPosition);
-  adjustChildPositions(children, childPositions );
-}
-
-function calculateChildPositions(children, parentPosition, 
-                                 childIndex = 0,
-                                 childPositions = []) {
-  if(childIndex == children.length){
-    return(childPositions);
-  }
-
-
-  const childRowPosition = childIndex + 1;
-
-  let currentChildPosition = parentPosition;
-
-
-  //get child position if all nodes were one node
-  if(childRowPosition == children.length/2+0.5){
-    currentChildPosition = parentPosition;
-  } else if(childRowPosition <= children.length/2) {
-    currentChildPosition = parentPosition - NODE_SPACING * childRowPosition;
-  } else {
-    currentChildPosition = parentPosition + NODE_SPACING * (childRowPosition - (children.length/2));
-  }
-
-
-  childPositions.push(currentChildPosition);
-  childIndex++;
-
-  return(determineChildPositions(children,
-                                 parentPosition,
-                                 childIndex,
-                                 childPositions));
-}
-
 function changePositions(centerNodeIndex, childPositions, childSize, childIndex = 0) {
   if(childIndex == children.length){
     return(childPositions);
@@ -307,30 +274,7 @@ function changePositions(centerNodeIndex, childPositions, childSize, childIndex 
   }
 }
 
-//helper function for determining children positions
-function isCenterNode(childRowPosition, childrenAmount) {
-  return(childRowPosition == ((childrenAmount/2)+0.5));
-}
-
-//to do create system for updating data structure with child position values.
-function updateChildPositions(parentNode, childPositions, childIndex = 0) {
-  const currentChild = parentNode.getChild(childIndex);
-
-  currentChild.setPosition(childPositions[childIndex++]);
-
-  if(childIndex < childPositions.length) {
-    updateChildPositions(parentNode, childPositions, childIndex);
-  }
-
-  return(parentNode);
-}
-
-
-/**
- *  @desc: a function for determening nodes verticle coordinate
- *  @param: int $nodeRow - The row number of the node
- *  @return: int - the verticle coordinate of the row
- */ 
-function getVerticlePosition(nodeRow) {
-  return(nodeRow * STARTING_Y);
-}
+/********************\
+|* HELPER FUNCTIONS *|
+\********************/
+//nothing yet

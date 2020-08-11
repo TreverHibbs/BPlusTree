@@ -83,6 +83,14 @@ describe('view-module', function () {
         command = { "name":"splitNode", "values":[2], "leftValues":[1], "rightValues":[2, 3] };
         modelCommands.push(command)
 
+        command = { "name":"examineNode" };
+        modelCommands.push(command)
+
+        command = { "name":"selectChild", "childIndex":1 };
+        modelCommands.push(command)
+        //TODO create a command for splitting a child node
+        //needs to update the parent and crate a new sibling node hmmm
+
         view.animate(modelCommands);
       });
     });
