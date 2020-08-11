@@ -23,7 +23,7 @@ controls the cmdConverter and BPlusTree functions and structures.
 * The BPlusTree is for the creation and manipulation of the BPlusTree datastructures
 
 ## Conventions
-* All functions should have a comment block specifing there purpose and the purposes of their return
+* All functions should have a comment block specifing their purpose and the purposes of their return
 values and parameters.
 
 ### Code Paradigms
