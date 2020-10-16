@@ -281,7 +281,7 @@ function createCommand() {
   var command = "";
   let commands = Array.from(arguments);
   var command = commands.reduce( function(accumulator, currentValue) {
-    return(accumulator + "<;>" + currentValue);
+    return(accumulator + "<>" + currentValue);
   });
   return(command);
 }
