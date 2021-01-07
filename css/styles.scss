@@ -1,0 +1,25 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2em 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "control-bar"
+    "main-svg";
+
+  height: 100%;
+  margin: 0px;
+}
+.control-bar { grid-area: control-bar; }
+.main-svg { grid-area: main-svg; }
+
+svg {
+  background-color: red;
+}
