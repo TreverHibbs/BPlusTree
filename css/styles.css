@@ -16,15 +16,12 @@ body, html {
 }
 
 .control-bar {
+  padding: 0px 0px 1em 1em;
   grid-area: control-bar;
 }
 
 .main-svg {
   grid-area: main-svg;
-}
-
-svg {
-  background-color: red;
 }
 
 /*# sourceMappingURL=styles.css.map */
