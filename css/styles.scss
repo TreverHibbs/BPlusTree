@@ -5,23 +5,37 @@ body, html {
   font-family: sans-serif;
 }
 
-.grid-container {
+.svg-grid-container {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 2em 1fr;
   gap: 0px 0px;
   grid-template-areas:
     "control-bar"
-    "main-svg";
+    "main-svg-container";
 
   height: 100%;
   margin: 0px;
 }
 .control-bar { 
-  padding: 0px 0px 1em 1em;
   grid-area: control-bar; 
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0px 2em 0px 2em
 }
-.main-svg { grid-area: main-svg; }
+.main-svg-container { 
+  grid-area: main-svg-container; 
+}
+
+.main-svg {
+  height: 100%;
+  width: 100%;
+}
+
+.insert {
+}
 
 svg {
 }

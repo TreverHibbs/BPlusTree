@@ -9,14 +9,19 @@
   <meta name="author" content="SitePoint">
 
   <link rel="stylesheet" href="css/styles.css?v=1.0">
+<!--  
   <script src="lib/btree.js"></script>
   <script src="https://d3js.org/d3.v6.min.js"></script>
+--!>
 
 </head>
 
 <body>
-<div class="grid-container">
-  <div class="main-svg"></div>
+<div class="svg-grid-container">
+  <div class="main-svg-container">
+    <svg id="main-svg" class="main-svg">
+    </svg>
+  </div>
   <div class="control-bar">
     <div class="insert">
       <button id='insert-btn' class="insert-btn" type="button">insert</button>
@@ -24,7 +29,7 @@
     </div>
   </div>
 </div>
-  <script src="lib/main.js"></script>
+  <script src="dist/main.js"></script>
 </body>
 </html>
 
