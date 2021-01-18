@@ -1,11 +1,11 @@
 import BTree from 'sorted-btree';
+import * as d3 from 'd3';
 
 
 
 
 
-
-//console.log("d3", d3);
+console.log("d3", d3);
 console.log("Btree", BTree);
 
 // select svg
